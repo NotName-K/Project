@@ -39,8 +39,9 @@ def database():
     conn.commit()
     conn.close()
 
-import sqlite3 as sql
+```
 
+```python
 def datafact():
     conn = sql.connect('database.db')
     c = conn.cursor()
@@ -97,7 +98,9 @@ def datafact():
     for i in productos_comprados:
         print(i)
     print(f"Total: {total_factura}")
+```
 
+```python
 def ustock(producto_id):
     conn = sql.connect('database.db')
     cursor = conn.cursor()
@@ -111,7 +114,8 @@ def ustock(producto_id):
     else:
         return None
     
-
+```
+```python
 def datastock():
     conn = sql.connect('database.db')  # Conectar a la base de datos
     cursor = conn.cursor()  # Crear un cursor
@@ -150,7 +154,8 @@ def datastock():
         # Guardar los cambios en la base de datos
         conn.commit()
     conn.close()  # Cerrar la conexión cuando termine
-
+```
+```python
 def menu():
     k = ["    Interfaz  ", "Añadir Stock [1]", "Modo Facturacion [2]", "Estadisticas [3]"]
     while True:
@@ -173,8 +178,8 @@ def menu():
             stats()
         elif a not in range(1, 4):
             print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
-
+```
+```python
 def stats(): # menu de estadisticas
     k = ["Estadisticas","Ventas[1]","Clientes[2]","Capital[3]"]
     while True:
@@ -195,30 +200,32 @@ def stats(): # menu de estadisticas
             budgetstats()
         elif a not in range(1, 4):
             print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
+```
+```python
 def sellstats(): #
     k = ["Estadísticas de Ventas","[1] Producto más vendido","[2] Ingresos totales"," [3] Menu Principal"]
     for i in k:
          print(i)
 
     a = int(input("Seleccione una opción: "))
-
-
+```
+```python
 def statsclients(): #
     k = ["Estadísticas de Clientes","[1] Cliente con mas compras","[2] gasto promedio","[3] Menu Principal"]
     for i in k:
         print(i)
     
     a = int(input("Seleccione una opción: "))
- 
-
+```
+```python
 def budgetstats(): #
     k = ["Estadísticas de Inventario","[1] Productos con bajo stock","[2] Valor total del inventario","[3] Volver al menú principal" ]
     for i in k:
         print(i)
     
     a = int(input("Seleccione una opción: "))
-
+```
+```python
 # funciones
 if __name__ == "__main__":
     database()
