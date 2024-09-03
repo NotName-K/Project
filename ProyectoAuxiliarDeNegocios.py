@@ -27,8 +27,6 @@ def database():
     conn.commit()
     conn.close()
 
-import sqlite3 as sql
-
 def datafact():
     conn = sql.connect('database.db')
     c = conn.cursor()
@@ -107,9 +105,13 @@ def datastock():
     while True:
         print("Ingrese los datos del producto (ID vacio para finalizar)(Stock):")
         
-        producto_id = input("ID del Producto: ")
-        if producto_id == "":
-            break
+        try:
+            producto_id = input("ID del Producto: ")
+            if producto_id == "":
+                break
+        except:
+            print("ID ya registrado")
+            return menu()
         
         Producto = input("Nombre del Producto: ")
         if Producto == "":
@@ -130,6 +132,8 @@ def datastock():
         stock = input("Cantidad en Stock: ")
         if stock == "":
             break
+
+
         
         # Insertar los datos en la tabla
         cursor.execute("INSERT INTO Stock (Producto_id, Producto, Marca, Presentacion, PrecioU, Stock) VALUES (?, ?, ?, ?, ?, ?)", 
@@ -139,12 +143,10 @@ def datastock():
         conn.commit()
     conn.close()  # Cerrar la conexión cuando termine
 
-def menu():
-    k = ["    Interfaz  ", "Añadir Stock [1]", "Modo Facturacion [2]", "Estadisticas [3]"]
+def menu(Interfaces: dict):
     while True:
         # Mostrar el menú
-        for i in k:
-            print(i)
+        print(Interfaces["General"])
         
         try:
             a = int(input("Ingrese una opción: "))
@@ -154,20 +156,18 @@ def menu():
         
         # Ejecutar la opción seleccionada
         if a == 1: 
-            datastock()
+            datastock(Interfaces)
         elif a == 2:
-            datafact()
+            datafact(Interfaces)
         elif a == 3:
-            stats()
+            stats(Interfaces)
         elif a not in range(1, 4):
             print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
 
-def stats(): # menu de estadisticas
-    k = ["Estadisticas","Ventas[1]","Clientes[2]","Capital[3]"]
+def stats(InterfazEstads: str): # menu de estadisticas
     while True:
-        for i in k:
-         print(i)
+        print(Interfaces["Estadísticas"])
 
         try:
             a = int(input("Ingrese una opción: "))
@@ -209,5 +209,49 @@ def budgetstats(): #
 
 # funciones
 if __name__ == "__main__":
+
+    I1 : str = """
+Bienvenido al auxiliar de Negocios Kevlab \n
+    |    Seleccione una opción    |
+    |  1  |  Inventario           |
+    |  2  |  Modo de Facturación  |
+    |  3  |  Estadísticas         |
+    """
+    I2 : str = """
+        Opciones de Inventario:
+        |    Seleccione una opción    |
+        |  1  |  Editar inventario    |
+        |  2  |  Ver inventario       |
+        |  3  |  Buscar producto      |
+    """
+
+    I3 : str = """
+        Mostrar inventario
+        |    Seleccione una opción    |
+        |  1  | Por costo             |
+        |  2  | Por ID                |
+    """
+    I4 : str = """
+        Mostrar inventario
+        |    Seleccione una opción    |
+        |  1  | Ascendente            |
+        |  2  | Descendente           |
+    """
+
+    I5 : str = """
+        Opciones de Búsqueda:
+        |    Seleccione una opción    |
+        |  1  |  Por nombre           |
+        |  2  |  Por ID               |
+    """
+
+    I6 : str = """
+        |        Estadísticas         |
+        |  1  |       Ventas          |
+        |  2  |       Clientes        |
+        |  3  |       Capital         |
+    """
+    Interfaces: dict = {"General": I1,"Inventario":I2, "Visibilidad": I3, "Orden": I4, "Búsqueda" : I5, "Estadísticas": I6}
+
     database()
-    menu()
+    menu(Interfaces)
