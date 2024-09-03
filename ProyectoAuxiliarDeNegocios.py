@@ -157,9 +157,9 @@ def menu(Interfaces: dict, bandera : bool):
         # Ejecutar la opción seleccionada
         match a:
             case 1:
-                datastock(Interfaces)
+                invent(Interfaces, bandera)
             case 2:
-                datafact(Interfaces)
+                datafact()
             case 3:
                 stats(Interfaces, bandera)
             case 4:
@@ -168,6 +168,87 @@ def menu(Interfaces: dict, bandera : bool):
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
 
+def invent(Interfaces: dict, bandera : bool): # menu de estadisticas
+    while bandera == True:
+        print(Interfaces["Inventario"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue
+
+        # Ejecutar la opción seleccionada
+        match a:
+            case 1:
+                inventEdit(Interfaces, bandera)
+            case 2:
+                inventShow(Interfaces, bandera)
+            case 3:
+                budgetstats(Interfaces, bandera)
+            case 4:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
+
+def inventEdit(Interfaces: dict, bandera : bool):
+    while bandera == True:
+        print(Interfaces["Editar"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+
+    # Ejecutar la opción seleccionada
+        match a:
+            case 1:
+                datastock()
+            case 2:
+                print("Funcion aún por diseñar")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+
+def inventShow(Interfaces: dict, bandera : bool):
+    while bandera == True:
+        print(Interfaces["Visibilidad"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue
+        # Ejecutar la opción seleccionada
+        match a:
+            case 1:
+                print("Filtro establecido: Por costo")
+            case 2:
+                print("Filtro establecido: Por ID")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+        
+        print(Interfaces["Orden"])
+        try:
+            b = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+        # Ejecutar la opción seleccionada
+        match b:
+            case 1:
+                print("Orden establecido: Ascendente")
+            case 2:
+                print("Orden establecido: Descendente")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+        return mostrarInvent(a,b)
+
+def mostrarInvent(a:int, b:int):
+    print("Funcion aún por diseñar")
 
 def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
     while bandera == True:
@@ -224,7 +305,6 @@ def statsclients(Interfaces: dict, bandera : bool):
         match a:
             case 1:
                 print("Funcion aún por diseñar")
-                break
             case 2:
                 print("Funcion aún por diseñar")
             case 3:
@@ -254,10 +334,11 @@ def budgetstats(Interfaces: dict, bandera : bool):
 
 # Se declaran las variables contenedoras de interfaces y se llaman a las funciones
 if __name__ == "__main__":
+   
     bandera : bool = True
     I1 : str = """
 Bienvenido al auxiliar de Negocios Kevlab \n
-    |    Seleccione una opción    |
+    |        Menú Principal       |
     |  1  |  Inventario           |
     |  2  |  Modo de Facturación  |
     |  3  |  Estadísticas         |
@@ -271,15 +352,23 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  3  |  Buscar producto      |
         |  4  |       Cancelar        |
     """
-
+    
     I3 : str = """
+        Editar Inventario
+        |    Seleccione una opción    |
+        |  1  | Añadir Producto       |
+        |  2  | Eliminar Producto     |
+        |  3  |       Cancelar        |
+    """
+
+    I4 : str = """
         Mostrar inventario
         |    Seleccione una opción    |
         |  1  | Por costo             |
         |  2  | Por ID                |
         |  3  |       Cancelar        |
     """
-    I4 : str = """
+    I5 : str = """
         Mostrar inventario
         |    Seleccione una opción    |
         |  1  | Ascendente            |
@@ -287,7 +376,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  3  |       Cancelar        |
     """
 
-    I5 : str = """
+    I6 : str = """
         Opciones de Búsqueda:
         |    Seleccione una opción    |
         |  1  |  Por nombre           |
@@ -295,33 +384,33 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  3  |       Cancelar        |
     """
 
-    I6 : str = """
+    I7 : str = """
         |        Estadísticas         |
         |  1  |       Ventas          |
         |  2  |       Clientes        |
         |  3  |       Capital         |
         |  4  |       Cancelar        |
     """
-    I7 : str = """
+    I8 : str = """
         |   Estadísticas de Ventas    |
         |  1  | Producto más vendido  |
         |  2  |   Ingresos totales    |
         |  3  |       Cancelar        |
     """
-    I8 : str = """
+    I9 : str = """
         |  Estadísticas de Clientes   |
         |  1  |Cliente con más compras|
         |  2  |    Gasto promedio     |
         |  3  |       Cancelar        |
     """
-    I9 : str = """
-        |   Estadísticas de Inventario   |
+    I10 : str = """
+        |   Estadísticas de Inventario  |
         |  1  | Productos con bajo stock |
         |  2  |Valor total del inventario|
         |  3  |         Cancelar         |
     """
 
-    Interfaces: dict = {"General": I1,"Inventario":I2, "Visibilidad": I3, "Orden": I4, "Búsqueda" : I5}
-    Interfaces.update({"Estadísticas": I6, "Ventas": I7, "Clientes": I8, "InvenStats": I9})
+    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5}
+    Interfaces.update({"Búsqueda" : I6, "Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10})
     database()
     menu(Interfaces, bandera)
