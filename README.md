@@ -19,6 +19,62 @@ Es por esto que el presente proyecto se diseñó como una aplicación modular, o
 El siguiente proyecto fue escogido ya que nos enfocamos en hacer algo útil y practico para quien requiera usar el programa, además de tener un rango de mejora inmenso dependiendo de las necesidades de cada usuario, lo que permite que sea aplicable en diversos contextos y empresas con requerimientos diferentes a los de las demás.
 
 ## Cómo abordamos el problema
+
+```mermaid
+ graph TD;
+ A(Inicio);
+    A -->B{Menú Principal};
+       B -->|Opción 1|C{Inventario};
+          C -->|Opción 1|D{Editar Inventario};
+              D -->|Opción 1|E[Añadir Producto];
+              E -->C;
+              D -->|Opción 2|F[Eliminar Producto];
+              F -->C;
+              D -->|Regresar|C
+          C -->|Opción 2|G{Ver Inventario};
+              G -->H{Mostrar por:};
+                 H -->|Opción 1|I[Precio];
+                 H -->|Opción 2|J[Código];
+                 H -->|Regresar|C;
+                 I -->K;
+              J -->K{Ver en Orden:};
+                 K -->|Opción 1|L[Ascendente];
+                 L -->C;
+                 K -->|Opción 2|M[Descendente];
+                 M -->C;
+                 K -->|Regresar|C;
+          C -->|Opción 3|N{Buscar producto};
+              N -->O{Buscar por:};
+                 O -->|Opción 1|P[Nombre];
+                 P -->C;
+                 O -->|Opción 2|Q[Código];
+                 Q -->C;
+                 O -->|Regresar|C;
+          C -->|Regresar|B;
+       B -->|Opción 2|R(Modo de Facturación);
+       B -->|Opción 3|S{Estadísticas};
+          S -->|Opción 1|T{Ventas};
+              T -->|Opción 1|U[Producto más vendido];
+              U -->S;
+              T -->|Opción 2|V[Ingresos Totales];
+              V -->S;
+              T -->|Regresar|S
+          S -->|Opción 2|W{Clientes};
+              W -->|Opción 1|X[Cliente con más compras];
+              X -->S;
+              W -->|Opción 2|Y[Gasto promedio];
+              Y -->S;
+              W -->|Regresar|S
+          S -->|Opción 3|Z{Capital};
+              Z -->|Opción 1|A1[Productos con bajo stock];
+              A1 -->S;
+              Z -->|Opción 2|B1[Valor total del inventario];
+              B1 -->S;
+              Z -->|Regresar|S
+          S -->|Regresar|B;
+       B -->|Opción 4|C1[Terminar programa];
+       C1 -->D1(Fin);
+```
 ## Solución planteada
 ```python
 import sqlite3 as sql
