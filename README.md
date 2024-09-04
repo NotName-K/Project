@@ -2,13 +2,14 @@
 Proyecto de la Asignatura Programación de Computadores 2024-1
 ***
 
- [![Logo-equipo.webp](https://i.postimg.cc/Z5BYw1Tx/Logo-equipo.webp)](https://postimg.cc/9D2jMgwD)
+![Logo-equipo.png](https://github.com/NotName-K/Project/blob/main/Imagenes/Logo-equipo.png)
  
 ## Integrantes 
  * Kevin Daniel Castellanos Peña C.C. 1052338203
  * Julian Jacobo Gustin Moreno  T.I. 1081275973
  * Lucas Garcia Álvarez T.I. 1062434165
 
+*Nota*: Este proyecto se llevó a cabo con la versión de python 3.12.5
 ## Descripción del problema
 Es muy común que a la hora de empezar con tu propio emprendimiento o idea de negocios te encuentres con dificultades para llevar registro de los movimientos, inventario, e incluso clientes de tu empresa, por lo que no es de extrañar que debido a la confusión muchos de estos negocios principiantes tiendan a sufrir grandes pérdidas e incluso tener que abandonar su actividad al no poder sobrellevar esta problemática.
 
@@ -216,7 +217,10 @@ Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```
 
 ## Solución planteada
-### Funciones para cargar y guardar datos en archivo JSON
+
+Luego de ya tener la idea de como llevar a cabo la solución de la problemática se inició la codificación de esta en el mismo orden en el que se planteó cada parte del programa.
+### Inicializar, cargar y guardar datos en archivo JSON
+En este caso, nos guiamos por los métodos dentro de la clase 18 de la asignatura "Diccionarios" y tal cómo se propuso en el diagrama de flujo, el programa lee, si existe o crea sino, el archivo de la base de datos y convierte sus datos a JSON para luego guardar cambios, si hubo, y utilizar la información de manera posterior.
 ```python
 import json
 from datetime import datetime
@@ -240,10 +244,6 @@ def save_data(file_name, data):
         json.dump(data, file, indent=4) 
     print("Los datos fueron guardados con exito")
 
-```
-***
-### Funcion para inicializar las tablas en JSON
-```python
 # Funcion para crear la estructura inicial de las tablas en JSON
 def initialize_data():
     if not os.path.exists("database.json"):
@@ -260,8 +260,13 @@ def initialize_data():
         print("El archivo JSON ya existe. No se realizaron cambios")
 ```
 ***
-### Funcion principal de menú
+### Interfaz Gráfica y sistema modular
+Tal como se indicó desde el inicio, uno de los puntos clave del programa es ser sencillo de utilizar y permitir desplazarse entre cada módulo o apartado sin ningún problema, para esto se utilizó la estructura match case, en donde el usuario selecciona el número de una de las opciones impresas en la terminal y el programa lo redigirá al apartado o acción deseada.
+
+Para facilitar la comprensión de la métodología propuesta el grupo llevó a cabo la creación de "Interfaces" guardadas en cadenas de caracteres, y estas a su vez en diccionarios para facilitar su ingreso a las funciones y acceso dentro de estas.
+
 ```python
+# Ejemplo de módulo
 def menu(Interfaces: dict, bandera : bool):
     while bandera == True:
         # Mostrar el menú
@@ -286,9 +291,21 @@ def menu(Interfaces: dict, bandera : bool):
                 bandera = False
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
+
+# Ejemplo de Interfaz
+I1 : str = """
+Bienvenido al auxiliar de Negocios Kevlab \n
+    |        Menú Principal       |
+    |  1  |  Inventario           |
+    |  2  |  Modo de Facturación  |
+    |  3  |  Estadísticas         |
+    |  4  |  Cerrar el programa   |
+    """
 ```
 ***
 ### Funcion principal para gestionar la entrada de datos de una factura
+En esta función se lleva a cabo el proceso de facturar una compra, para esto se carga el archivo y se obtiene el stock de cada producto del inventario, se ingresa el cliente y se registra si aún no lo está, luego se busca por el ID el producto y se digita las unidades que se desean adquirir, si cualquiera de estos datos no concuerda se regresa a ingresar el código y unas unidades aceptables, cuando ello suceda, se registrará la compra y la factura en la base de datos, se reducirá el stock del producto y se imprimirá la factura con la fecha exacta.
+
 ```python
 #Funcion para gestionar la entrada de datos de una factura
 def datafact():
@@ -382,6 +399,9 @@ def datafact():
 ```
 ***
 ### Funciones para gestionar la entrada de datos de stock (agregar, eliminar)
+Para agregar un dato al inventario se abre el archivo y cargan sus datos, luego se indican todos los datos asociados al producto (ID, Nombre, Marca, Presentación, Precio, Unidades en stock), se añade a la lista de stock y se guardan los cambios.
+
+Por otra parte, para eliminar un producto se abre el archivo y esta misma lista donde se encuentra cada producto, se busca por el ID ingresado y se elimina de la lista.
 ```python
 # Función para gestionar la entrada de datos de stock
 def datastock():
@@ -446,67 +466,8 @@ def delete_product(product_id, data):
 ```
 ***
 ### Funciones para ver y buscar en el inventario
+Para poder visualizar el inventario primeramente se pregunta al usuario el criterio por el cual se van a ordenar los productos, en este caso se cuenta con dos, el precio y el ID, además de esto se debe ingresar si se desea un orden ascendente o descendente, esto dependiendo de cómo le sea más útil al usuario dicha información, para luego ordenar la lista de stock con base a los criterios seleccionados e imprimir los resultados.
 ```python
-def invent(Interfaces: dict, bandera : bool): # menu de inventario
-    while bandera == True:
-        print(Interfaces["Inventario"])
-        try:
-            a = int(input("Seleccione una opción: "))
-        except ValueError:
-            print("Por favor, ingrese un número entero válido.")
-            continue
-
-        # Ejecutar la opción seleccionada
-        match a:
-            case 1:
-                inventEdit(Interfaces, bandera)
-            case 2:
-                inventShow(Interfaces, bandera)
-            case 3:
-                print(Interfaces["Búsqueda"])
-                buscar_criterio = int(input("Seleccione una opción: "))
-                search_product(buscar_criterio)
-                continue
-            case 4:
-                break
-            case _:
-                print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
-
-#Funcion para buscar un producto
-def search_product(criterio):
-    data = load_data("database.json")
-    stock_list = data.get("Stock", [])
-    if criterio == 1:
-        nombre = input("Ingrese el nombre del producto: ").strip().lower()
-        resultados = [producto for producto in stock_list if nombre in producto["Producto"].strip().lower()]
-    elif criterio == 2:
-        try:
-            producto_id = int(input("Ingrese el ID del producto: ").strip())
-            resultados = [producto for producto in stock_list if int(producto["Producto_id"]) == producto_id]
-        except ValueError:
-            print("ID inválido, Debe ser un número entero")
-            resultados = []
-    if resultados:
-        print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
-        for producto in resultados:
-            print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
-    else:
-        print("No se encontraron productos que coincidan con los criterios de búsqueda.")
-#Funcion para mostrar el inventario basado en los dos criterios anteriores
-def mostrarInvent(a:int, b:int):
-    data = load_data("database.json")
-    stock_list = data.get("Stock", [])
-    print("Funcion aún por diseñar")
-
-    #Ordenar la lista en funcion del criterio seleccionado
-    if a == 1:
-        stock_list.sort(key=lambda x: x["PrecioU"], reverse=(b==2))
-    elif a == 2:
-        stock_list.sort(key=lambda x: x["Producto_id"], reverse=(b==2))
-    print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
-    for producto in stock_list:
-        print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
-
 def inventShow(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["Visibilidad"])
@@ -548,9 +509,48 @@ def inventShow(Interfaces: dict, bandera : bool):
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
         
         mostrarInvent(a, b)
+
+#Funcion para mostrar el inventario basado en los dos criterios anteriores
+def mostrarInvent(a:int, b:int):
+    data = load_data("database.json")
+    stock_list = data.get("Stock", [])
+    print("Funcion aún por diseñar")
+
+    #Ordenar la lista en funcion del criterio seleccionado
+    if a == 1:
+        stock_list.sort(key=lambda x: x["PrecioU"], reverse=(b==2))
+    elif a == 2:
+        stock_list.sort(key=lambda x: x["Producto_id"], reverse=(b==2))
+    print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
+    for producto in stock_list:
+        print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
+```
+A su vez, para buscar algún producto se utiliza una estrategia similar, se carga la información del archivo y se obtiene la lista de stock, de donde por medio del nombre o del ID el usuario busca el producto deseado.
+```python
+#Funcion para buscar un producto
+def search_product(criterio):
+    data = load_data("database.json")
+    stock_list = data.get("Stock", [])
+    if criterio == 1:
+        nombre = input("Ingrese el nombre del producto: ").strip().lower()
+        resultados = [producto for producto in stock_list if nombre in producto["Producto"].strip().lower()]
+    elif criterio == 2:
+        try:
+            producto_id = int(input("Ingrese el ID del producto: ").strip())
+            resultados = [producto for producto in stock_list if int(producto["Producto_id"]) == producto_id]
+        except ValueError:
+            print("ID inválido, Debe ser un número entero")
+            resultados = []
+    if resultados:
+        print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
+        for producto in resultados:
+            print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
+    else:
+        print("No se encontraron productos que coincidan con los criterios de búsqueda.")
 ```
 ***
 ### Funciones de estadisticas
+Se implementa el diseño modular y la estructura match case, actualmente se cuenta únicamente con  la función "el producto más vendido", sin embargo, en el futuro se plantea el agregar las demás para complementar el apoyo que puede dar este programa. 
 ```python
 def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
     while bandera == True:
@@ -666,7 +666,8 @@ def producto_mas_vendido():
         print("No se han registrado ventas o no hay productos en el stock.")
 ```
 ***
-### Main
+### Función Main y Apartado Gráfico en detalle
+Contiene las interfaces que ya se describieron, se llaman a las funciones para inicializar la base de datos y se imprime la interfaz del menú.
 ```python
 # Se declaran las variables contenedoras de interfaces y se llaman a las funciones
 if __name__ == "__main__":
@@ -746,11 +747,11 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  3  |         Cancelar         |
     """
     
-
+    # Se guarda cada Interfaz en un diccionario para facilitar su ingreso a funciones y su acceso en ellas
     Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5}
     Interfaces.update({"Búsqueda" : I6, "Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10})
 
-    menu(Interfaces, bandera)
+    menu(Interfaces, bandera) # Se llama a la función menu para dar inicio a la interfaz
 ```
 ## Instrucciones de uso
 ***
@@ -762,11 +763,15 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
   
   Si estas usando Windows puedes comprobar que la instalación haya funcionado abriendo la consola de Windows, presionando (win + r), y escribir "python --version", si funcionó debería responder con la versión descargada y ya se tendría al interprete instalado, no obstante, si no funcionó tendrás que descargalo directamente en la tienda de Microsoft para luego ya realizar comprobación y muy seguramente ya habrá funcionado.
   
-- **Segundo**: Descarga el archivo rar desde [este enlace](https://github.com/NotName-K/Project/blob/main/Kevlab.rar) y extraelo en una carpeta, encontrarás el archivo ejecutable del programa adentro.
+- **Segundo**: Debes descargar el [programa](https://github.com/NotName-K/Project/blob/main/ProyectoAuxiliarDeNegocios.py) de python y abrirlo en un editor de código como puede ser [Visual Studio Code](https://code.visualstudio.com/download), o si prefieres descarga el archivo rar desde [este enlace](https://github.com/NotName-K/Project/blob/main/Kevlab.rar) y extraelo en una carpeta, encontrarás el archivo ejecutable del programa adentro.
 
 ### Cómo utilizarlo
-Simplemente ejecuta el archivo .exe que encontrarás en la carpeta en la que descomprimiste el archivo .rar
 
-Al iniciar el programa se abrirá el menú dentro de la terminal de Python en la parte baja de la interfaz del editor, allí se presentarán varias opciones según los requerimientos del usuario y este debe seleccionar el número de la opción que desee seleccionar.
+En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "Kevlab.rar"
+
+Si el usuario utiliza el editor de código, debe utilizar la opción "File" en el extremo superior izquierdo de la interfaz de Visual Studio y seleccionar "Open New File", en la venta emergente ha de ubicar y abrir el archivo "ProyectoAuxiliarDeNegocios.py", de ahí utiliza el símbolo de "Play" o "Resumir" en la esquina superior derecha del editor, esta tiene como nombre "Run Python File", al hacer click esta dará inicio al programa.
+
+Al iniciar, el programa abrirá el menú dentro de la terminal de Python en la parte baja de la interfaz del editor, allí se presentarán varias opciones según los requerimientos del usuario y este debe seleccionar el número de la opción que desee seleccionar.
 
 Luego de realizar cualquier acción dentro de este programa se redigirá al usuario al menú inmediatamente anterior, por lo que para salir de este y darle fin ha de seleccionar "Cancelar" hasta llegar al menú principal donde debe elegir "Cerrar el Programa", en caso contrario, puede seguir eligiendo otras opciones y llevar a cabo otras funciones hasta donde el usuario lo desee.
+
