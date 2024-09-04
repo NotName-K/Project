@@ -110,12 +110,27 @@ def datafact():
     save_data("database.json", data)
 
     #Imprimir la información de la factura
-    print(f"ID CLIENTE: CC. {cc}")
-    print("ID, PRODUCTO, MARCA, PRESENTACION, PRECIO UNITARIO, UNIDADES, SUBTOTAL")
-    for i in productos_comprados:
-        print(i)
-    print(f"Total: {total_factura}")
+    def imprimir_factura(factura):
+        print(f"\nFactura ID: {factura['Factura_id']}")
+        print(f"Fecha: {factura['Fecha']}")
+        print(f"Cliente ID: {factura['Cliente_id']}")
+        print("\nDetalle de Productos:")
+        
+        # Encabezado
+        print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Unidades':<10} {'Subtotal':<10}")
+        print("="*85)
+        
+        # Datos de productos
+        for producto in factura['Productos']:
+            print(f"{producto[0]:<10} {producto[1]:<20} {producto[2]:<15} {producto[3]:<15} {producto[4]:<15.2f} {producto[5]:<10} {producto[6]:<10.2f}")
+        
+        # Total
+        print("\nTotal de la Factura:")
+        print(f"Total: {factura['Total']:.2f}")
 
+    # Llamar a la función para imprimir la última factura agregada
+    ultima_factura = data["Facturas"][-1]  # Obtiene la última factura agregada
+    imprimir_factura(ultima_factura)
 
 # Función para gestionar la entrada de datos de stock
 def datastock():
@@ -367,7 +382,7 @@ def sellstats(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                producto_mas_vendido()
             case 2:
                 print("Funcion aún por diseñar")
             case 3:
@@ -414,6 +429,39 @@ def budgetstats(Interfaces: dict, bandera : bool):
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+
+def producto_mas_vendido():
+    data = load_data("database.json")
+    # Diccionario para contar las unidades vendidas por rproducto
+    conteo_productos = {}
+    #Iterar sobre todas las facturas
+    for factura in data["Facturas"]:
+        for producto in factura["Productos"]:
+            id_producto = producto[0] # Indexar sobre las propiedades del producto
+            unidades = producto[5]
+            if id_producto in conteo_productos:
+                conteo_productos[id_producto] += unidades
+            else:
+                conteo_productos[id_producto] = unidades
+    
+    if conteo_productos:
+        producto_mas_vendido_id = max(conteo_productos, key=conteo_productos.get)
+        producto = ustock(producto_mas_vendido_id, data)
+        
+        if producto:
+            print("Producto más vendido:")
+            print(f"ID: {producto['Producto_id']}")
+            print(f"Nombre: {producto['Producto']}")
+            print(f"Marca: {producto['Marca']}")
+            print(f"Presentación: {producto['Presentacion']}")
+            print(f"Precio Unitario: {producto['PrecioU']}")
+            print(f"Unidades Vendidas: {conteo_productos[producto_mas_vendido_id]}")
+        else:
+            print("El producto más vendido no se encuentra en el stock.")
+    else:
+        print("No se han registrado ventas o no hay productos en el stock.")
+    
+
 
 # Se declaran las variables contenedoras de interfaces y se llaman a las funciones
 if __name__ == "__main__":
