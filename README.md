@@ -93,6 +93,7 @@ Primero hicimos el codigo lo principal de añadir y comprar y fuimos añadiendo 
        C1 -->D1(Fin);
 ```
 ## Solución planteada
+### Funciones para cargar y guardar datos en archivo JSON
 ```python
 import json
 from datetime import datetime
@@ -116,13 +117,10 @@ def save_data(file_name, data):
         json.dump(data, file, indent=4) 
     print("Los datos fueron guardados con exito")
 
-# Funcion para buscar un producto en la lista de stock usando su ID
-def ustock(codeprod, data):
-    for producto in data.get("Stock", []): #Recorre cada producto en la lista de stock
-        if int(producto["Producto_id"]) == int(codeprod): #Si encuentra un producto con la id correspondiente, lo retorna
-            return producto
-    return None #Si no lo encuentra, retorna None
-
+```
+***
+### Funcion para inicializar las tablas en JSON
+```python
 # Funcion para crear la estructura inicial de las tablas en JSON
 def initialize_data():
     if not os.path.exists("database.json"):
@@ -137,9 +135,37 @@ def initialize_data():
         print("Datos inciales creados en database.json")
     else:
         print("El archivo JSON ya existe. No se realizaron cambios")
-
 ```
-
+***
+### Funcion principal de menú
+```python
+def menu(Interfaces: dict, bandera : bool):
+    while bandera == True:
+        # Mostrar el menú
+        print(Interfaces["General"])
+         
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue
+            
+        # Ejecutar la opción seleccionada
+        match a:
+            case 1:
+                invent(Interfaces, bandera)
+            case 2:
+                datafact()
+            case 3:
+                stats(Interfaces, bandera)
+            case 4:
+                print("Fin del programa")
+                bandera = False
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
+```
+***
+### Funcion principal para gestionar la entrada de datos de una factura
 ```python
 #Funcion para gestionar la entrada de datos de una factura
 def datafact():
@@ -209,13 +235,30 @@ def datafact():
     save_data("database.json", data)
 
     #Imprimir la información de la factura
-    print(f"ID CLIENTE: CC. {cc}")
-    print("ID, PRODUCTO, MARCA, PRESENTACION, PRECIO UNITARIO, UNIDADES, SUBTOTAL")
-    for i in productos_comprados:
-        print(i)
-    print(f"Total: {total_factura}")
+    def imprimir_factura(factura):
+        print(f"\nFactura ID: {factura['Factura_id']}")
+        print(f"Fecha: {factura['Fecha']}")
+        print(f"Cliente ID: {factura['Cliente_id']}")
+        print("\nDetalle de Productos:")
+        
+        # Encabezado
+        print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Unidades':<10} {'Subtotal':<10}")
+        print("="*85)
+        
+        # Datos de productos
+        for producto in factura['Productos']:
+            print(f"{producto[0]:<10} {producto[1]:<20} {producto[2]:<15} {producto[3]:<15} {producto[4]:<15.2f} {producto[5]:<10} {producto[6]:<10.2f}")
+        
+        # Total
+        print("\nTotal de la Factura:")
+        print(f"Total: {factura['Total']:.2f}")
 
+    # Llamar a la función para imprimir la última factura agregada
+    ultima_factura = data["Facturas"][-1]  # Obtiene la última factura agregada
+    imprimir_factura(ultima_factura)
 ```
+***
+### Funciones para gestionar la entrada de datos de stock (agregar, eliminar)
 ```python
 # Función para gestionar la entrada de datos de stock
 def datastock():
@@ -261,33 +304,26 @@ def datastock():
 
         #Guardar los cambios
         save_data("database.json", data)
-
-#Funcion para mostrar el menu principal y manejar las opciones
-def menu(Interfaces: dict, bandera : bool):
-    while bandera == True:
-        # Mostrar el menú
-        print(Interfaces["General"])
-         
-        try:
-            a = int(input("Seleccione una opción: "))
-        except ValueError:
-            print("Por favor, ingrese un número entero válido.")
-            continue
-            
-        # Ejecutar la opción seleccionada
-        match a:
-            case 1:
-                invent(Interfaces, bandera)
-            case 2:
-                datafact()
-            case 3:
-                stats(Interfaces, bandera)
-            case 4:
-                print("Fin del programa")
-                bandera = False
-            case _:
-                print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
-
+```
+```python
+#Funcion para eliminar un producto
+def delete_product(product_id, data):
+    # Obtener la lista de stock
+    stock_list = data.get("Stock", [])
+    # Comprobar si la lista de stock es None y convertirla a una lista vacía si es necesario
+    if stock_list is None:
+        stock_list = []
+    # Buscar el producto con el ID dado
+    for i in range(len(stock_list)):
+        if int(stock_list[i]["Producto_id"]) == product_id:
+            # Eliminar el producto de la lista
+            del stock_list[i]
+            return True
+    return False
+```
+***
+### Funciones para ver y buscar en el inventario
+```python
 def invent(Interfaces: dict, bandera : bool): # menu de inventario
     while bandera == True:
         print(Interfaces["Inventario"])
@@ -333,49 +369,6 @@ def search_product(criterio):
             print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
     else:
         print("No se encontraron productos que coincidan con los criterios de búsqueda.")
-
-#Funcion para eliminar un producto
-def delete_product(product_id, data):
-    # Obtener la lista de stock
-    stock_list = data.get("Stock", [])
-    # Comprobar si la lista de stock es None y convertirla a una lista vacía si es necesario
-    if stock_list is None:
-        stock_list = []
-    # Buscar el producto con el ID dado
-    for i in range(len(stock_list)):
-        if int(stock_list[i]["Producto_id"]) == product_id:
-            # Eliminar el producto de la lista
-            del stock_list[i]
-            return True
-    return False
-
-def inventEdit(Interfaces: dict, bandera : bool):
-
-    while bandera == True:
-        print(Interfaces["Editar"])
-        try:
-            a = int(input("Seleccione una opción: "))
-        except ValueError:
-            print("Por favor, ingrese un número entero válido.")
-            continue 
-
-    # Ejecutar la opción seleccionada
-        match a:
-            case 1:
-                datastock()
-            case 2:
-                product_id= int(input("Ingrese el ID del producto a eliminar: "))
-                data = load_data("database.json")
-                if delete_product(product_id, data):
-                    save_data("database.json", data)
-                    print(f"El producto con ID {product_id} fue eliminado con exito")
-                else:
-                    print(f"Producto con id {product_id} no encontrado")
-            case 3:
-                break
-            case _:
-                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
 #Funcion para mostrar el inventario basado en los dos criterios anteriores
 def mostrarInvent(a:int, b:int):
     data = load_data("database.json")
@@ -432,7 +425,10 @@ def inventShow(Interfaces: dict, bandera : bool):
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
         
         mostrarInvent(a, b)
-
+```
+***
+### Funciones de estadisticas
+```python
 def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
     while bandera == True:
         print(Interfaces["Estadísticas"])
@@ -467,7 +463,7 @@ def sellstats(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                producto_mas_vendido()
             case 2:
                 print("Funcion aún por diseñar")
             case 3:
@@ -515,7 +511,39 @@ def budgetstats(Interfaces: dict, bandera : bool):
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+def producto_mas_vendido():
+    data = load_data("database.json")
+    # Diccionario para contar las unidades vendidas por rproducto
+    conteo_productos = {}
+    #Iterar sobre todas las facturas
+    for factura in data["Facturas"]:
+        for producto in factura["Productos"]:
+            id_producto = producto[0] # Indexar sobre las propiedades del producto
+            unidades = producto[5]
+            if id_producto in conteo_productos:
+                conteo_productos[id_producto] += unidades
+            else:
+                conteo_productos[id_producto] = unidades
+    
+    if conteo_productos:
+        producto_mas_vendido_id = max(conteo_productos, key=conteo_productos.get)
+        producto = ustock(producto_mas_vendido_id, data)
+        
+        if producto:
+            print("Producto más vendido:")
+            print(f"ID: {producto['Producto_id']}")
+            print(f"Nombre: {producto['Producto']}")
+            print(f"Marca: {producto['Marca']}")
+            print(f"Presentación: {producto['Presentacion']}")
+            print(f"Precio Unitario: {producto['PrecioU']}")
+            print(f"Unidades Vendidas: {conteo_productos[producto_mas_vendido_id]}")
+        else:
+            print("El producto más vendido no se encuentra en el stock.")
+    else:
+        print("No se han registrado ventas o no hay productos en el stock.")
 ```
+***
+### Main
 ```python
 # Se declaran las variables contenedoras de interfaces y se llaman a las funciones
 if __name__ == "__main__":
@@ -617,6 +645,8 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
 - **Finalmente**: Dentro de este repositorio encontrará el archivo que contiene el código del programa, esta nombrado como "ProyectoAuxiliarDeNegocios.py" y se accede a él en la parte superior del repositorio donde estan varios archivos adjuntos, allí se ha de seleccionar el archivo y en la parte derecha de la pantalla encontrará la opción llamada "Download Raw File" al seleccionarla lo descargará y ya se habrá terminado todo el proceso de instalación.
 ### Cómo utilizarlo
 Para utilizar el programa es tan sencillo como ir a la parte superior izquierda de la interfaz del editor en donde se hallará el menú "File", allí se seleccionará la opción "Open New File" y deberás buscar el archivo del programa dentro de tu dispositivo y así seleccionarlo y abrirlo, después de esto, en la parte superior derecha se encontrará un simbolo conocido normalmente como "Reanudar" o "Play", aquí recibe el nombre de "Run Python Fyle", debes de hacer click en él y con eso el programa iniciará inmediatamente.
+## Opción 2
+Descargar el RAR que contiene el ejecutable del programa (preeliminar) en este repositorio.
 
 Al iniciar el programa se abrirá el menú dentro de la terminal de Python en la parte baja de la interfaz del editor, allí se presentarán varias opciones según los requerimientos del usuario y este debe seleccionar el número de la opción que desee seleccionar.
 
