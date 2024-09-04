@@ -17,7 +17,26 @@ Es por esto que el presente proyecto se diseñó como una aplicación modular, o
 El siguiente proyecto fue escogido ya que nos enfocamos en hacer algo útil y practico para quien requiera usar el programa, además de tener un rango de mejora inmenso dependiendo de las necesidades de cada usuario, lo que permite que sea aplicable en diversos contextos y empresas con requerimientos diferentes a los de las demás.
 
 ## Cómo abordamos el problema
+Para poder llevar a cabo la resolución de esta problemática, nos encargamos de detallar las funciones que como mínimo el programa debería cumplir, teniendo en cuenta los requerimientos más generales de cualquier empresa y los que más relevancia tiene el mantener seguimiento.
 
+En ese sentido se creó el siguiente diagrama en donde se reflejan estas funciones básicas:
+
+![Diagrama Preliminar]()
+
+Como se puede observar el foco del proyecto va en torno a las ventas, el inventario, los clientes y las estadísticas que todo emprendimiento necesita, en ese sentido, se diseñó el programa con la idea de poder llevar a cabo cálculos y seguimientos de estos aspectos.
+
+Teniendo eso en cuenta
+Primero hicimos el codigo lo principal de añadir y comprar y fuimos añadiendo funciones poco a poco hasta completar la interfaz prevista
+```mermaid
+ graph TD;
+ A(Inicio);
+    A -->B{Menú Principal};
+       B -->|Opción 1|C{Inventario};
+       B -->|Opción 2|R(Modo de Facturación);
+       B -->|Opción 3|S{Estadísticas};
+       B -->|Opción 4|C1[Terminar programa];
+       C1 -->D1(Fin);
+```
 ```mermaid
  graph TD;
  A(Inicio);
@@ -594,10 +613,6 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
   
 - **Segundo**: Se necesita descargar el Editor de código "Visual Studio Code", puede ser en este [link](https://code.visualstudio.com/docs/?dv=win) o directamente en la tienda de Microsoft.
 
-- **Tercero**: Se necesita instalar ciertas extensiones en el editor de códigoDebes buscar el icono a la izquierda de la interfaz con el nombre de "Extensions" o presionar (Ctrl + Shift + X), con ello buscarás las siguientes extensiones y así descargarlas en el editor:
-
-    1. Python  (Que incluirá Pylance y Python Debugger)
-    2. SQLite Viewer (Necesario para poder observar adecuadamente las tablas de información)
 
 - **Finalmente**: Dentro de este repositorio encontrará el archivo que contiene el código del programa, esta nombrado como "ProyectoAuxiliarDeNegocios.py" y se accede a él en la parte superior del repositorio donde estan varios archivos adjuntos, allí se ha de seleccionar el archivo y en la parte derecha de la pantalla encontrará la opción llamada "Download Raw File" al seleccionarla lo descargará y ya se habrá terminado todo el proceso de instalación.
 ### Cómo utilizarlo
