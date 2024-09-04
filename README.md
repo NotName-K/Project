@@ -21,7 +21,7 @@ Para poder llevar a cabo la resolución de esta problemática, nos encargamos de
 
 En ese sentido se creó el siguiente diagrama en donde se reflejan estas funciones básicas:
 
-![Diagrama Preliminar]()
+![Diagrama Preliminar](https://github.com/NotName-K/Project/blob/main/Imagenes/Diagrama%20preliminar.jpg?raw=true)
 
 Como se puede observar el foco del proyecto va en torno a las ventas, el inventario, los clientes y las estadísticas que todo emprendimiento necesita, en ese sentido, se diseñó el programa con la idea de poder llevar a cabo cálculos y seguimientos de estos aspectos.
 
