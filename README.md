@@ -17,30 +17,113 @@ Es por esto que el presente proyecto se diseñó como una aplicación modular, o
 El siguiente proyecto fue escogido ya que nos enfocamos en hacer algo útil y practico para quien requiera usar el programa, además de tener un rango de mejora inmenso dependiendo de las necesidades de cada usuario, lo que permite que sea aplicable en diversos contextos y empresas con requerimientos diferentes a los de las demás.
 
 ## Cómo abordamos el problema
-Para poder llevar a cabo la resolución de esta problemática, nos encargamos de detallar las funciones que como mínimo el programa debería cumplir, teniendo en cuenta los requerimientos más generales de cualquier empresa y los que más relevancia tiene el mantener seguimiento.
+Primeramente, el programa debe funcionar en distintas ocasiones y debe guardar los datos ya registrados previamente para que se mantenga el seguimiento, por esto, se tuvo la necesidad de crear una base de datos para ello.
 
-En ese sentido se creó el siguiente diagrama en donde se reflejan estas funciones básicas:
+Esto puede llevarse a cabo de distintas formas, ya que inicialmente se probó con SQL, sin embargo, el equipo se decantó por usar archivos de texto con formato JSON debido a su mayor cercanía a los contenidos de la asignatura y su simpleza frente a otras alternativas; el funcionamiento se basa en que el programa lee un archivo llamado database.db, el cuál este mismo creará si no existe previamente, y en él se almancenan datos que al cargar se convierten en archivos JSON contenedores de las variables que requerimos y que se guardan en la misma base de datos.
 
-![Diagrama Preliminar](https://github.com/NotName-K/Project/blob/main/Imagenes/Diagrama%20preliminar.jpg?raw=true)
-
-Como se puede observar el foco del proyecto va en torno a las ventas, el inventario, los clientes y las estadísticas que todo emprendimiento necesita, en ese sentido, se diseñó el programa con la idea de poder llevar a cabo cálculos y seguimientos de estos aspectos.
-
-Teniendo eso en cuenta
-Primero hicimos el codigo lo principal de añadir y comprar y fuimos añadiendo funciones poco a poco hasta completar la interfaz prevista
 ```mermaid
  graph TD;
  A(Inicio);
-    A -->B{Menú Principal};
+    A -->F1(Se intenta abrir la base de datos);
+    F1-->|Existe|G1(Se carga el contenido);
+    F1-->|No existe|H1(Se crea diccionario con listas);
+    G1-->I1;
+    H1-->I1(Se convierte el diccionario en JSON);
+    I1-->J1(Se escribe el JSON en el archivo);
+    J1-->K1(Se guarda la información en el archivo);
+```
+
+Hecha la base de datos ya se pudo empezar a trabajar en la resolución de esta problemática, nos encargamos de detallar las funciones que como mínimo el programa debería cumplir, teniendo en cuenta los requerimientos más generales de cualquier empresa y los que más relevancia tiene el mantener seguimiento.
+
+En ese sentido se creó el siguiente diagrama en donde se reflejan estas funciones básicas:
+
+![Diagrama preliminar.jpg](https://github.com/NotName-K/Project/blob/main/Imagenes/Diagrama%20preliminar.jpg)
+
+Como se puede observar el foco del proyecto va en torno a las ventas, el inventario, los clientes y las estadísticas que todo emprendimiento necesita, en ese sentido, se diseñó el programa con la idea de poder llevar a cabo cálculos y seguimientos de estos aspectos.
+
+Teniendo eso en cuenta se creó un diseño modular en el que cada función se enuentra de un campo relativo al componente del que se relacione, por ejemplo, las opciones de ver el inventario o añadir algún producto a él están dentro del apartado "Inventario"; cada apartado tiene como acceso el menú principal desde donde inicia la interacción con el usuario y en donde terminará finalmente, puesto que la idea es que el usuario no tenga que ingresar repetidas veces en intervalos cortos de tiempo para, digamos, añadir 10 productos al inventario, de esta forma el usuario puede agregar estos productos o realizar cualquier otra acción las veces que desee y al final regresar al menú y cerrar el programa.
+
+```mermaid
+ graph TD;
+ A(Inicio);
+ A -->F1(Se carga/crea la base de datos);
+    F1 -->B{Menú Principal};
        B -->|Opción 1|C{Inventario};
        B -->|Opción 2|R(Modo de Facturación);
        B -->|Opción 3|S{Estadísticas};
        B -->|Opción 4|C1[Terminar programa];
        C1 -->D1(Fin);
 ```
+Posteriormente, se diseñó cada apartado teniendo en cuenta esas funciones que ya habíamos seleccionado y se aplicó el sistema modular propuesto al igual que se hizo con el menú principal.
+
+- Inventario:
+
+El apartado de Inventario debe incluir las opciones de añadir o eliminar productos, así como también de buscarlos bajo ciertos criterios, que posteriormente se definieron como el nombre o el ID de dichos productos; y finalmente el poder reflejarlos ordenados en la manera en que el usuario prefiera o necesite.
+
+```mermaid
+graph TD;
+B{Menú} -->|Opción 1|C{Inventario};
+          C -->|Opción 1|D{Editar Inventario};
+              D -->|Opción 1|E[Añadir Producto];
+              E -->C;
+              D -->|Opción 2|F[Eliminar Producto];
+              F -->C;
+              D -->|Regresar|C
+          C -->|Opción 2|G{Ver Inventario};
+              G -->H{Mostrar por:};
+                 H -->|Opción 1|I[Precio];
+                 H -->|Opción 2|J[Código];
+                 H -->|Regresar|C;
+                 I -->K;
+              J -->K{Ver en Orden:};
+                 K -->|Opción 1|L[Ascendente];
+                 L -->C;
+                 K -->|Opción 2|M[Descendente];
+                 M -->C;
+                 K -->|Regresar|C;
+          C -->|Opción 3|N{Buscar producto};
+              N -->O{Buscar por:};
+                 O -->|Opción 1|P[Nombre];
+                 P -->C;
+                 O -->|Opción 2|Q[Código];
+                 Q -->C;
+                 O -->|Regresar|C;
+          C -->|Regresar|B;
+```
+- Facturación:
+
+Cómo tal no es un apartado, está dentro del menú principal debido a su indudable importancia a la hora de manejar negocios, ya que de ahí parten todas las demás funciones y estadísticas, y una buena parte del tiempo se empleará en facturar a los consumidores de los productos de la empresa.
+
+```mermaid
+graph TD;
+B{Menú} -->|Opción 2|R(Modo de Facturación);
+    R -->L1(Se ingresan los datos del cliente);
+    L1-->|Si no esta registrado|M1(Se registra en la base de datos);
+    L1-->N1;
+    M1-->N1(Se ingresa el código de los productos);
+    N1-->|Si no existe|N1;
+    N1-->O1(Se ingresan las unidadades por comprar);
+    O1-->P1[Unidades > Stock?];
+    P1-->|Sí|N1;
+    P1-->|No|Q1(Se registra la compra);
+    Q1-->R1(Se restan las unidades del stock);
+    R1-->S1(Se imprime la factura);
+    S1-->T1(Se guarda la información en el archivo);
+    T1-->B;
+```
+
+Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```mermaid
  graph TD;
  A(Inicio);
-    A -->B{Menú Principal};
+    A -->F1(Se intenta abrir la base de datos);
+    F1-->|Existe|G1(Se carga el contenido);
+    F1-->|No existe|H1(Se crea diccionario con listas);
+    G1-->I1
+    H1-->I1(Se convierte el diccionario en JSON)
+    I1-->J1(Se escribe el JSON en el archivo)
+    J1-->K1(Se guarda la información en el archivo)
+    K1 -->B{Menú Principal};
        B -->|Opción 1|C{Inventario};
           C -->|Opción 1|D{Editar Inventario};
               D -->|Opción 1|E[Añadir Producto];
@@ -69,6 +152,19 @@ Primero hicimos el codigo lo principal de añadir y comprar y fuimos añadiendo 
                  O -->|Regresar|C;
           C -->|Regresar|B;
        B -->|Opción 2|R(Modo de Facturación);
+           R -->L1(Se ingresan los datos del cliente);
+           L1-->|Si no esta registrado|M1(Se registra en la base de datos);
+           L1-->N1;
+           M1-->N1(Se ingresa el código de los productos);
+           N1-->|Si no existe|N1;
+           N1-->O1(Se ingresan las unidadades por comprar);
+           O1-->P1[Unidades > Stock?];
+           P1-->|Sí|N1;
+           P1-->|No|Q1(Se registra la compra);
+           Q1-->R1(Se restan las unidades del stock);
+           R1-->S1(Se imprime la factura);
+           S1-->T1(Se guarda la información en el archivo);
+           T1-->B;
        B -->|Opción 3|S{Estadísticas};
           S -->|Opción 1|T{Ventas};
               T -->|Opción 1|U[Producto más vendido];
