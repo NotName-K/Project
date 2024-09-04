@@ -112,6 +112,32 @@ B{Menú} -->|Opción 2|R(Modo de Facturación);
     T1-->B;
 ```
 
+- Estadísticas:
+
+Para el apartado de estadísticas se planteó que el usuario pueda analizar el comportamiento de su empresa teniendo en cuenta variables como: el producto más vendido, Productos con bajo Stock o Gasto Promedio, utilizando el mismo sistema modular visto anteriormente dentro de las categorías "Ventas", "Clientes" y "Capital".
+```mermaid
+ graph TD;
+B[Menú] -->|Opción 3|S{Estadísticas};
+          S -->|Opción 1|T{Ventas};
+              T -->|Opción 1|U[Producto más vendido];
+              U -->S;
+              T -->|Opción 2|V[Ingresos Totales];
+              V -->S;
+              T -->|Regresar|S
+          S -->|Opción 2|W{Clientes};
+              W -->|Opción 1|X[Cliente con más compras];
+              X -->S;
+              W -->|Opción 2|Y[Gasto promedio];
+              Y -->S;
+              W -->|Regresar|S
+          S -->|Opción 3|Z{Capital};
+              Z -->|Opción 1|A1[Productos con bajo stock];
+              A1 -->S;
+              Z -->|Opción 2|B1[Valor total del inventario];
+              B1 -->S;
+              Z -->|Regresar|S
+          S -->|Regresar|B;
+```
 Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```mermaid
  graph TD;
@@ -188,6 +214,7 @@ Al juntarse todos estos procesos se obtiene el siguiente resultado:
        B -->|Opción 4|C1[Terminar programa];
        C1 -->D1(Fin);
 ```
+
 ## Solución planteada
 ### Funciones para cargar y guardar datos en archivo JSON
 ```python
