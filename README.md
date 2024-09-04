@@ -767,7 +767,7 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
 
 ### Cómo utilizarlo
 
-En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "Kevlab.rar"
+En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "Keyfact.rar"
 
 Si el usuario utiliza el editor de código, debe utilizar la opción "File" en el extremo superior izquierdo de la interfaz de Visual Studio y seleccionar "Open New File", en la venta emergente ha de ubicar y abrir el archivo "ProyectoAuxiliarDeNegocios.py", de ahí utiliza el símbolo de "Play" o "Resumir" en la esquina superior derecha del editor, esta tiene como nombre "Run Python File", al hacer click esta dará inicio al programa.
 
