@@ -468,7 +468,7 @@ if __name__ == "__main__":
     initialize_data()
     bandera : bool = True
     I1 : str = """
-Bienvenido al auxiliar de Negocios Kevlab \n
+Bienvenido al auxiliar de Negocios Keyfact \n
     |        Menú Principal       |
     |  1  |  Inventario           |
     |  2  |  Modo de Facturación  |
