@@ -639,14 +639,10 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
   
   Si estas usando Windows puedes comprobar que la instalación haya funcionado abriendo la consola de Windows, presionando (win + r), y escribir "python --version", si funcionó debería responder con la versión descargada y ya se tendría al interprete instalado, no obstante, si no funcionó tendrás que descargalo directamente en la tienda de Microsoft para luego ya realizar comprobación y muy seguramente ya habrá funcionado.
   
-- **Segundo**: Se necesita descargar el Editor de código "Visual Studio Code", puede ser en este [link](https://code.visualstudio.com/docs/?dv=win) o directamente en la tienda de Microsoft.
+- **Segundo**: Descarga el archivo rar desde [este enlace](https://github.com/NotName-K/Project/blob/main/Kevlab.rar) y extraelo en una carpeta, encontrarás el archivo ejecutable del programa adentro.
 
-
-- **Finalmente**: Dentro de este repositorio encontrará el archivo que contiene el código del programa, esta nombrado como "ProyectoAuxiliarDeNegocios.py" y se accede a él en la parte superior del repositorio donde estan varios archivos adjuntos, allí se ha de seleccionar el archivo y en la parte derecha de la pantalla encontrará la opción llamada "Download Raw File" al seleccionarla lo descargará y ya se habrá terminado todo el proceso de instalación.
 ### Cómo utilizarlo
-Para utilizar el programa es tan sencillo como ir a la parte superior izquierda de la interfaz del editor en donde se hallará el menú "File", allí se seleccionará la opción "Open New File" y deberás buscar el archivo del programa dentro de tu dispositivo y así seleccionarlo y abrirlo, después de esto, en la parte superior derecha se encontrará un simbolo conocido normalmente como "Reanudar" o "Play", aquí recibe el nombre de "Run Python Fyle", debes de hacer click en él y con eso el programa iniciará inmediatamente.
-## Opción 2
-Descargar el RAR que contiene el ejecutable del programa (preeliminar) en este repositorio.
+Simplemente ejecuta el archivo .exe que encontrarás en la carpeta en la que descomprimiste el archivo .rar
 
 Al iniciar el programa se abrirá el menú dentro de la terminal de Python en la parte baja de la interfaz del editor, allí se presentarán varias opciones según los requerimientos del usuario y este debe seleccionar el número de la opción que desee seleccionar.
 
