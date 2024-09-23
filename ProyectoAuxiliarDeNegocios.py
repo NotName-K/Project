@@ -152,7 +152,7 @@ def datastock():
         if Marca == "":
             break
 
-        Presentacion = input("Presentación (kg): ")
+        Presentacion = input("Presentación: ")
         if Presentacion == "":
             break
         
@@ -264,6 +264,7 @@ def delete_product(product_id, data):
             return True
     return False
 
+# Función para añadir o eliminar artículos del inventario
 def inventEdit(Interfaces: dict, bandera : bool):
 
     while bandera == True:
@@ -291,7 +292,7 @@ def inventEdit(Interfaces: dict, bandera : bool):
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
-#Funcion para mostrar el inventario basado en los dos criterios anteriores
+#Funcion para mostrar el inventario basado en los dos criterios ingresados
 def mostrarInvent(a:int, b:int):
     data = load_data("database.json")
     stock_list = data.get("Stock", [])
@@ -306,7 +307,7 @@ def mostrarInvent(a:int, b:int):
     for producto in stock_list:
         print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
 
-def inventShow(Interfaces: dict, bandera : bool):
+def inventShow(Interfaces: dict, bandera : bool): # Función para mostrar el inventario
     while bandera == True:
         print(Interfaces["Visibilidad"])
         try:
@@ -314,7 +315,7 @@ def inventShow(Interfaces: dict, bandera : bool):
         except ValueError:
             print("Por favor, ingrese un número entero válido.")
             continue
-        # Ejecutar la opción seleccionada
+        # Elección de criterios par mostrar el inventario
         match a:
             case 1:
                 print("Filtro establecido: Por costo")
@@ -333,7 +334,7 @@ def inventShow(Interfaces: dict, bandera : bool):
         except ValueError:
             print("Por favor, ingrese un número entero válido.")
             continue 
-        # Ejecutar la opción seleccionada
+        # Eleccción de orden para mostrar el inventario seleccionado
         match b:
             case 1:
                 print("Orden establecido: Ascendente")
@@ -370,7 +371,8 @@ def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
 
-def sellstats(Interfaces: dict, bandera : bool):
+# Función para ver estadísticas de venta
+def sellstats(Interfaces: dict, bandera : bool): 
     while bandera == True:
         print(Interfaces["Ventas"])
         try:
@@ -384,12 +386,13 @@ def sellstats(Interfaces: dict, bandera : bool):
             case 1:
                 producto_mas_vendido()
             case 2:
-                print("Funcion aún por diseñar")
+                IngresosTotales()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+# Función para ver estadísticas de clientes
 def statsclients(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["Clientes"])
@@ -402,14 +405,15 @@ def statsclients(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                clientemascompras()
             case 2:
-                print("Funcion aún por diseñar")
+                promxclcom()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+# Función para ver estadísticas del inventario
 def budgetstats(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["InvenStats"])
@@ -422,14 +426,28 @@ def budgetstats(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                bajostock()
             case 2:
-                print("Funcion aún por diseñar")
+                valtotinv()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+# Función para obtener los ingresos totales entre determinadas fechas
+def IngresosTotales(): 
+    data = load_data("database.json")
+    IngresoNeto: int = 0
+    fechas: list = []
+    for i in data["Facturas"]:
+       Ingreso = i.get("Total")
+       IngresoNeto += Ingreso
+       fechas.append(i.get("Fecha"))
+    fechas.sort()
+    print("Ingresos Totales: ")
+    print(f"EL Total de Ingresos entre {fechas[0]} y {fechas[-1]} es {int(IngresoNeto)}")
+
+# Función para mostrar el producto más vendido
 def producto_mas_vendido():
     data = load_data("database.json")
     # Diccionario para contar las unidades vendidas por rproducto
@@ -460,15 +478,111 @@ def producto_mas_vendido():
             print("El producto más vendido no se encuentra en el stock.")
     else:
         print("No se han registrado ventas o no hay productos en el stock.")
-    
 
+# Función para obtener y guardar el ID de los clientes, sin repetirse
+def idclientsord():
+    data = load_data("database.json")
+    idclientesfact : list = []
+    for i in data["Facturas"]:
+        idclientesfact.append(i.get("Cliente_id"))
+    idfactn = set(idclientesfact)
+    return idfactn
 
+# Función para contar la cantidad de facturas por cada cliente e imprimir el cliente con mayor cantidad de estas
+def clientemascompras():
+    data = load_data("database.json") 
+    while bandera == True:
+        print(Interfaces["Clientbuy"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+
+        match a:
+            case 1:
+              cantfact = []
+              for i in idclientsord():
+                  facturas = 0
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      facturas += 1
+                    cantfact.append([int(facturas), i])
+              cantfact.sort(reverse=True)
+              print(f"El cliente con mas facturas tiene ID {cantfact[0][1]} con un total de {cantfact[0][0]} facturas.")
+            case 2:
+              idtotal = []
+              for i in idclientsord():
+                  Invertido = 0
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      Invertido += j["Total"]
+                  idtotal.append([int(Invertido), i])
+              idtotal.sort(reverse=True) 
+              print(f"El cliente que mas ha gastado tiene ID {idtotal[0][1]} con {idtotal[0][0]} gastados ")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+
+#Función para acumular el dinero invertido en todos los productos vendidos y al dividirlo por el número de clientes, se obtiene el promedio de compras por cliente
+def promxclcom():
+    data = load_data("database.json") 
+    while bandera == True:
+        print(Interfaces["Clientprom"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+
+        match a:
+            case 1:
+                 Invertido = 0
+                 for i in idclientsord():
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      Invertido += j["Total"]
+                 promxcl = Invertido / len(idclientsord())
+                 print(f"El gasto promedio por cliente es {int(promxcl)}")
+
+            case 2:
+                 inv = 0
+                 facturas = 0
+                 for i in data["Facturas"]:
+                     inv += i["Total"]
+                     facturas += 1
+                 print(f"El gasto promedio por cliente es {int(inv / facturas)}")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+
+# Se ingresa un valor mínimo que debe tener de stock los productos, si alguno tiene menos se imprime
+def bajostock():
+    a = int(input("Ingrese el valor mínimo de stock para filtrar: "))
+    data = load_data("database.json")
+    # Almacenar los productos con bajo stock en una lista
+    for i in data['Stock']:
+        if i['Stock'] < a:
+            producto_info = f"{i["Producto"]} {i["Marca"]} {i["Presentacion"]}"
+            print(f"El producto {producto_info} está agotado o por agotarse, {i["Stock"]} unidades") 
+             # Devuelve la lista de productos con bajo stock
+
+# Se cuenta el valor total de cada producto, multiplicando su precio unitario por su stock, se suman estos y se obtiene el valor del inventario
+def valtotinv():
+   vltotal = 0
+   data = load_data("database.json") 
+   for i in data['Stock']:
+       vltotal += i['Stock']*i['PrecioU']
+   print(F"El valor Total del inventario es {int(vltotal)}")
+       
 # Se declaran las variables contenedoras de interfaces y se llaman a las funciones
 if __name__ == "__main__":
     initialize_data()
     bandera : bool = True
     I1 : str = """
-Bienvenido al auxiliar de Negocios Kevlab \n
+Bienvenido al auxiliar de Negocios Keyfact \n
     |        Menú Principal       |
     |  1  |  Inventario           |
     |  2  |  Modo de Facturación  |
@@ -481,7 +595,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  1  |  Editar inventario    |
         |  2  |  Ver inventario       |
         |  3  |  Buscar producto      |
-        |  4  |       Cancelar        |
+        |  4  |       Atras           |
     """
     
     I3 : str = """
@@ -489,7 +603,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  | Añadir Producto       |
         |  2  | Eliminar Producto     |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I4 : str = """
@@ -497,14 +611,14 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  | Por costo             |
         |  2  | Por ID                |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I5 : str = """
         Mostrar inventario
         |    Seleccione una opción    |
         |  1  | Ascendente            |
         |  2  | Descendente           |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I6 : str = """
@@ -512,7 +626,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  |  Por nombre           |
         |  2  |  Por ID               |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I7 : str = """
@@ -520,29 +634,40 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  1  |       Ventas          |
         |  2  |       Clientes        |
         |  3  |       Capital         |
-        |  4  |       Cancelar        |
+        |  4  |       Atras           |
     """
     I8 : str = """
         |   Estadísticas de Ventas    |
         |  1  | Producto más vendido  |
         |  2  |   Ingresos totales    |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I9 : str = """
         |  Estadísticas de Clientes   |
         |  1  |Cliente con más compras|
         |  2  |    Gasto promedio     |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I10 : str = """
-        |   Estadísticas de Inventario  |
+        |   Estadísticas de Inventario   |
         |  1  | Productos con bajo stock |
         |  2  |Valor total del inventario|
-        |  3  |         Cancelar         |
+        |  3  |         Atras            |
     """
-    
+    I11 : str = """
+        |   Clientes con más compras     |
+        |  1  |  Por Numero de Facturas  |
+        |  2  |  Por Dinero Gastado      |
+        |  3  |         Atras            |
+    """ 
+    I12 : str = """
+        |           Gasto Promedio       |
+        |  1  |      Por Cliente         |
+        |  2  |      Por Factura         |
+        |  3  |         Atras            |
+    """ 
 
-    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5}
-    Interfaces.update({"Búsqueda" : I6, "Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10})
+    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5, "Búsqueda" : I6}
+    Interfaces.update({"Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10, "Clientbuy": I11, "Clientprom": I12})
 
     menu(Interfaces, bandera)
