@@ -25,13 +25,13 @@ Esto puede llevarse a cabo de distintas formas, ya que inicialmente se probó co
 ```mermaid
  graph TD;
  A(Inicio);
-    A -->F1(Se intenta abrir la base de datos);
-    F1-->|Existe|G1(Se carga el contenido);
-    F1-->|No existe|H1(Se crea diccionario con listas);
+    A -->F1[Se intenta abrir la base de datos];
+    F1-->|Existe|G1[Se carga el contenido];
+    F1-->|No existe|H1[Se crea diccionario con listas];
     G1-->I1;
-    H1-->I1(Se convierte el diccionario en JSON);
-    I1-->J1(Se escribe el JSON en el archivo);
-    J1-->K1(Se guarda la información en el archivo);
+    H1-->I1[Se convierte el diccionario en JSON];
+    I1-->J1[Se escribe el JSON en el archivo];
+    J1-->K1[Se guarda la información en el archivo];
 ```
 
 Hecha la base de datos ya se pudo empezar a trabajar en la resolución de esta problemática, nos encargamos de detallar las funciones que como mínimo el programa debería cumplir, teniendo en cuenta los requerimientos más generales de cualquier empresa y los que más relevancia tiene el mantener seguimiento.
@@ -47,10 +47,10 @@ Teniendo eso en cuenta se creó un diseño modular en el que cada función se en
 ```mermaid
  graph TD;
  A(Inicio);
- A -->F1(Se carga/crea la base de datos);
+ A -->F1[Se carga/crea la base de datos];
     F1 -->B{Menú Principal};
        B -->|Opción 1|C{Inventario};
-       B -->|Opción 2|R(Modo de Facturación);
+       B -->|Opción 2|R[Modo de Facturación];
        B -->|Opción 3|S{Estadísticas};
        B -->|Opción 4|C1[Terminar programa];
        C1 -->D1(Fin);
@@ -97,19 +97,19 @@ Cómo tal no es un apartado, está dentro del menú principal debido a su induda
 
 ```mermaid
 graph TD;
-B{Menú} -->|Opción 2|R(Modo de Facturación);
-    R -->L1(Se ingresan los datos del cliente);
-    L1-->|Si no esta registrado|M1(Se registra en la base de datos);
+B{Menú} -->|Opción 2|R[Modo de Facturación];
+    R -->L1[Se ingresan los datos del cliente];
+    L1-->|Si no esta registrado|M1[Se registra en la base de datos];
     L1-->N1;
-    M1-->N1(Se ingresa el código de los productos);
+    M1-->N1[Se ingresa el código de los productos];
     N1-->|Si no existe|N1;
-    N1-->O1(Se ingresan las unidadades por comprar);
+    N1-->O1[Se ingresan las unidadades por comprar];
     O1-->P1[Unidades > Stock?];
     P1-->|Sí|N1;
-    P1-->|No|Q1(Se registra la compra);
-    Q1-->R1(Se restan las unidades del stock);
-    R1-->S1(Se imprime la factura);
-    S1-->T1(Se guarda la información en el archivo);
+    P1-->|No|Q1[Se registra la compra];
+    Q1-->R1[Se restan las unidades del stock];
+    R1-->S1[Se imprime la factura];
+    S1-->T1[Se guarda la información en el archivo];
     T1-->B;
 ```
 
@@ -143,13 +143,13 @@ Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```mermaid
  graph TD;
  A(Inicio);
-    A -->F1(Se intenta abrir la base de datos);
-    F1-->|Existe|G1(Se carga el contenido);
-    F1-->|No existe|H1(Se crea diccionario con listas);
+    A -->F1[Se intenta abrir la base de datos];
+    F1-->|Existe|G1[Se carga el contenido];
+    F1-->|No existe|H1[Se crea diccionario con listas];
     G1-->I1
-    H1-->I1(Se convierte el diccionario en JSON)
-    I1-->J1(Se escribe el JSON en el archivo)
-    J1-->K1(Se guarda la información en el archivo)
+    H1-->I1[Se convierte el diccionario en JSON]
+    I1-->J1[Se escribe el JSON en el archivo]
+    J1-->K1[Se guarda la información en el archivo]
     K1 -->B{Menú Principal};
        B -->|Opción 1|C{Inventario};
           C -->|Opción 1|D{Editar Inventario};
@@ -178,19 +178,19 @@ Al juntarse todos estos procesos se obtiene el siguiente resultado:
                  Q -->C;
                  O -->|Regresar|C;
           C -->|Regresar|B;
-       B -->|Opción 2|R(Modo de Facturación);
-           R -->L1(Se ingresan los datos del cliente);
-           L1-->|Si no esta registrado|M1(Se registra en la base de datos);
+       B -->|Opción 2|R[Modo de Facturación];
+           R -->L1[Se ingresan los datos del cliente];
+           L1-->|Si no esta registrado|M1[Se registra en la base de datos];
            L1-->N1;
-           M1-->N1(Se ingresa el código de los productos);
+           M1-->N1[Se ingresa el código de los productos];
            N1-->|Si no existe|N1;
-           N1-->O1(Se ingresan las unidadades por comprar);
+           N1-->O1[Se ingresan las unidadades por comprar];
            O1-->P1[Unidades > Stock?];
            P1-->|Sí|N1;
-           P1-->|No|Q1(Se registra la compra);
-           Q1-->R1(Se restan las unidades del stock);
-           R1-->S1(Se imprime la factura);
-           S1-->T1(Se guarda la información en el archivo);
+           P1-->|No|Q1[Se registra la compra];
+           Q1-->R1[Se restan las unidades del stock];
+           R1-->S1[Se imprime la factura];
+           S1-->T1[Se guarda la información en el archivo];
            T1-->B;
        B -->|Opción 3|S{Estadísticas};
           S -->|Opción 1|T{Ventas};
@@ -767,7 +767,7 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
 
 ### Cómo utilizarlo
 
-En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "Kevlab.rar"
+En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "Keyfact.rar"
 
 Si el usuario utiliza el editor de código, debe utilizar la opción "File" en el extremo superior izquierdo de la interfaz de Visual Studio y seleccionar "Open New File", en la venta emergente ha de ubicar y abrir el archivo "ProyectoAuxiliarDeNegocios.py", de ahí utiliza el símbolo de "Play" o "Resumir" en la esquina superior derecha del editor, esta tiene como nombre "Run Python File", al hacer click esta dará inicio al programa.
 
