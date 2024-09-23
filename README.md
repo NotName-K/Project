@@ -806,7 +806,7 @@ if __name__ == "__main__":
     initialize_data()
     bandera : bool = True
     I1 : str = """
-Bienvenido al auxiliar de Negocios Kevlab \n
+Bienvenido al auxiliar de Negocios Keyfact \n
     |        Menú Principal       |
     |  1  |  Inventario           |
     |  2  |  Modo de Facturación  |
@@ -819,7 +819,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  1  |  Editar inventario    |
         |  2  |  Ver inventario       |
         |  3  |  Buscar producto      |
-        |  4  |       Cancelar        |
+        |  4  |       Atras           |
     """
     
     I3 : str = """
@@ -827,7 +827,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  | Añadir Producto       |
         |  2  | Eliminar Producto     |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I4 : str = """
@@ -835,14 +835,14 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  | Por costo             |
         |  2  | Por ID                |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I5 : str = """
         Mostrar inventario
         |    Seleccione una opción    |
         |  1  | Ascendente            |
         |  2  | Descendente           |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I6 : str = """
@@ -850,7 +850,7 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |    Seleccione una opción    |
         |  1  |  Por nombre           |
         |  2  |  Por ID               |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
 
     I7 : str = """
@@ -858,32 +858,43 @@ Bienvenido al auxiliar de Negocios Kevlab \n
         |  1  |       Ventas          |
         |  2  |       Clientes        |
         |  3  |       Capital         |
-        |  4  |       Cancelar        |
+        |  4  |       Atras           |
     """
     I8 : str = """
         |   Estadísticas de Ventas    |
         |  1  | Producto más vendido  |
         |  2  |   Ingresos totales    |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I9 : str = """
         |  Estadísticas de Clientes   |
         |  1  |Cliente con más compras|
         |  2  |    Gasto promedio     |
-        |  3  |       Cancelar        |
+        |  3  |       Atras           |
     """
     I10 : str = """
-        |   Estadísticas de Inventario  |
+        |   Estadísticas de Inventario   |
         |  1  | Productos con bajo stock |
         |  2  |Valor total del inventario|
-        |  3  |         Cancelar         |
+        |  3  |         Atras            |
     """
-    
-    # Se guarda cada Interfaz en un diccionario para facilitar su ingreso a funciones y su acceso en ellas
-    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5}
-    Interfaces.update({"Búsqueda" : I6, "Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10})
+    I11 : str = """
+        |   Clientes con más compras     |
+        |  1  |  Por Numero de Facturas  |
+        |  2  |  Por Dinero Gastado      |
+        |  3  |         Atras            |
+    """ 
+    I12 : str = """
+        |           Gasto Promedio       |
+        |  1  |      Por Cliente         |
+        |  2  |      Por Factura         |
+        |  3  |         Atras            |
+    """ 
 
-    menu(Interfaces, bandera) # Se llama a la función menu para dar inicio a la interfaz
+    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5, "Búsqueda" : I6}
+    Interfaces.update({"Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10, "Clientbuy": I11, "Clientprom": I12})
+
+    menu(Interfaces, bandera)
 ```
 ## Instrucciones de uso
 ***
