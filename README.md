@@ -550,9 +550,9 @@ def search_product(criterio):
 ```
 ***
 ### Funciones de estadisticas
-Se implementa el diseño modular y la estructura match case, actualmente se cuenta únicamente con  la función "el producto más vendido", sin embargo, en el futuro se plantea el agregar las demás para complementar el apoyo que puede dar este programa. 
+Se implementa el diseño modular y la estructura match case para el funcionamiento del menú y la elección de opciones por el usuario.
 ```python
-def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
+def stats(Interfaces: dict, bandera : bool): # Menu de estadisticas
     while bandera == True:
         print(Interfaces["Estadísticas"])
         try:
@@ -574,7 +574,8 @@ def stats(Interfaces: dict, bandera : bool): # menu de estadisticas
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
 
-def sellstats(Interfaces: dict, bandera : bool):
+# Función para ver estadísticas de venta
+def sellstats(Interfaces: dict, bandera : bool): 
     while bandera == True:
         print(Interfaces["Ventas"])
         try:
@@ -588,12 +589,13 @@ def sellstats(Interfaces: dict, bandera : bool):
             case 1:
                 producto_mas_vendido()
             case 2:
-                print("Funcion aún por diseñar")
+                IngresosTotales()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+# Función para ver estadísticas de clientes
 def statsclients(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["Clientes"])
@@ -606,14 +608,15 @@ def statsclients(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                clientemascompras()
             case 2:
-                print("Funcion aún por diseñar")
+                promxclcom()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
+# Función para ver estadísticas del inventario
 def budgetstats(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["InvenStats"])
@@ -626,14 +629,33 @@ def budgetstats(Interfaces: dict, bandera : bool):
     # Ejecutar la opción seleccionada
         match a:
             case 1:
-                print("Funcion aún por diseñar")
+                bajostock()
             case 2:
-                print("Funcion aún por diseñar")
+                valtotinv()
             case 3:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
+```
+Dentro de este menú, cómo podemos apreciar contamos con las siguientes seis opciones para poder analizar el inventario, las ventas y los clientes.
+- Ingresos Totales
+```python
+# Función para obtener los ingresos totales entre determinadas fechas
+def IngresosTotales(): 
+    data = load_data("database.json")
+    IngresoNeto: int = 0
+    fechas: list = []
+    for i in data["Facturas"]:
+       Ingreso = i.get("Total")
+       IngresoNeto += Ingreso
+       fechas.append(i.get("Fecha"))
+    fechas.sort()
+    print("Ingresos Totales: ")
+    print(f"EL Total de Ingresos entre {fechas[0]} y {fechas[-1]} es {int(IngresoNeto)}")
+```
+- Producto más vendido
+```python
+# Función para mostrar el producto más vendido
 def producto_mas_vendido():
     data = load_data("database.json")
     # Diccionario para contar las unidades vendidas por rproducto
@@ -664,6 +686,116 @@ def producto_mas_vendido():
             print("El producto más vendido no se encuentra en el stock.")
     else:
         print("No se han registrado ventas o no hay productos en el stock.")
+```
+- Cliente con más compras
+```python
+# Función para obtener y guardar el ID de los clientes, sin repetirse
+def idclientsord():
+    data = load_data("database.json")
+    idclientesfact : list = []
+    for i in data["Facturas"]:
+        idclientesfact.append(i.get("Cliente_id"))
+    idfactn = set(idclientesfact)
+    return idfactn
+
+# Función para contar la cantidad de facturas por cada cliente e imprimir el cliente con mayor cantidad de estas
+def clientemascompras():
+    data = load_data("database.json") 
+    while bandera == True:
+        print(Interfaces["Clientbuy"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+
+        match a:
+            case 1:
+              cantfact = []
+              for i in idclientsord():
+                  facturas = 0
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      facturas += 1
+                    cantfact.append([int(facturas), i])
+              cantfact.sort(reverse=True)
+              print(f"El cliente con mas facturas tiene ID {cantfact[0][1]} con un total de {cantfact[0][0]} facturas.")
+            case 2:
+              idtotal = []
+              for i in idclientsord():
+                  Invertido = 0
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      Invertido += j["Total"]
+                  idtotal.append([int(Invertido), i])
+              idtotal.sort(reverse=True) 
+              print(f"El cliente que mas ha gastado tiene ID {idtotal[0][1]} con {idtotal[0][0]} gastados ")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+```
+- Promedio de compras por cliente:
+```python
+#Función para acumular el dinero invertido en todos los productos vendidos y al dividirlo por el número de clientes, se obtiene el promedio de compras por cliente
+def promxclcom():
+    data = load_data("database.json") 
+    while bandera == True:
+        print(Interfaces["Clientprom"])
+        try:
+            a = int(input("Seleccione una opción: "))
+        except ValueError:
+            print("Por favor, ingrese un número entero válido.")
+            continue 
+
+        match a:
+            case 1:
+                 Invertido = 0
+                 for i in idclientsord():
+                  for j in data["Facturas"]:
+                    if i == j["Cliente_id"]:
+                      Invertido += j["Total"]
+                 promxcl = Invertido / len(idclientsord())
+                 print(f"El gasto promedio por cliente es {int(promxcl)}")
+
+            case 2:
+                 inv = 0
+                 facturas = 0
+                 for i in data["Facturas"]:
+                     inv += i["Total"]
+                     facturas += 1
+                 print(f"El gasto promedio por cliente es {int(inv / facturas)}")
+            case 3:
+                break
+            case _:
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
+
+- Productos con Bajo Stock
+
+# Se ingresa un valor mínimo que debe tener de stock los productos, si alguno tiene menos se imprime
+def bajostock():
+    bandera: bool = False
+    a = int(input("Ingrese el valor mínimo de stock para filtrar: "))
+    data = load_data("database.json")
+    # Almacenar los productos con bajo stock en una lista
+    for i in data['Stock']:
+        if i['Stock'] < a:
+            bandera : bool = True
+            producto_info = f"{i["Producto"]} {i["Marca"]} {i["Presentacion"]}"
+            print(f"El producto {producto_info} está agotado o por agotarse, {i["Stock"]} unidades") 
+             # Devuelve la lista de productos con bajo stock
+    if not bandera:
+        print("No hay ningún producto con stock por debajo de esa cantidad")
+```
+- Valor total del inventario
+```python
+# Se cuenta el valor total de cada producto, multiplicando su precio unitario por su stock, se suman estos y se obtiene el valor del inventario
+def valtotinv():
+   vltotal = 0
+   data = load_data("database.json") 
+   for i in data['Stock']:
+       vltotal += i['Stock']*i['PrecioU']
+   print(F"El valor Total del inventario es {int(vltotal)}")
 ```
 ***
 ### Función Main y Apartado Gráfico en detalle
