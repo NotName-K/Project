@@ -560,14 +560,18 @@ def promxclcom():
 
 # Se ingresa un valor mínimo que debe tener de stock los productos, si alguno tiene menos se imprime
 def bajostock():
+    bandera: bool = False
     a = int(input("Ingrese el valor mínimo de stock para filtrar: "))
     data = load_data("database.json")
     # Almacenar los productos con bajo stock en una lista
     for i in data['Stock']:
         if i['Stock'] < a:
+            bandera : bool = True
             producto_info = f"{i["Producto"]} {i["Marca"]} {i["Presentacion"]}"
             print(f"El producto {producto_info} está agotado o por agotarse, {i["Stock"]} unidades") 
              # Devuelve la lista de productos con bajo stock
+    if not bandera:
+        print("No hay ningún producto con stock por debajo de esa cantidad")
 
 # Se cuenta el valor total de cada producto, multiplicando su precio unitario por su stock, se suman estos y se obtiene el valor del inventario
 def valtotinv():
