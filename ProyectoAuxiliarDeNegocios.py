@@ -163,11 +163,9 @@ def datastock():
     data = load_data("database.json")
     while True:
         try:
-            print("Ingrese los datos del producto (ID vacio para finalizar): ")
+            print("Ingrese los datos del producto (Digite ENTER para finalizar): ")
             # Solicitar el ID del producto
             producto_id = int(input("ID del Producto: "))
-            if producto_id == "":
-                break
 
             # Solicitar otros detalles del producto
             Producto = input("Nombre del Producto: ")
@@ -207,14 +205,18 @@ def datastock():
 
 # Función para eliminar un producto del inventario
 def deletestock():
-    product_id= int(input("Ingrese el ID del producto a eliminar: "))
-    data = load_data("database.json")
-    if delete_product(product_id, data):
-        save_data("database.json", data)
-        print(f"El producto con ID {product_id} fue eliminado con exito")
-    else:
-         print(f"Producto con id {product_id} no encontrado")
-
+    while True:
+        try:
+            product_id= int(input("Ingrese el ID del producto a eliminar: "))
+            data = load_data("database.json")
+            if delete_product(product_id, data):
+                save_data("database.json", data)
+                print(f"El producto con ID {product_id} fue eliminado con exito")
+            else:
+                print(f"Producto con id {product_id} no encontrado")
+        except ValueError:
+            print("Valor inválido, por favor intente otra vez")
+            
 # Funcion para eliminar el producto ingresado en la función anterior
 def delete_product(product_id, data):
     # Obtener la lista de stock
