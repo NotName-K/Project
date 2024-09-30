@@ -244,39 +244,44 @@ En este caso, nos guiamos por los métodos dentro de la clase 18 de la asignatur
 import json
 from datetime import datetime
 import os
+
 # Funcion para cargar datos desde un archivo JSON
 def load_data(file_name):
-    try:
-        # Intenta abrir el archivo en modo de lectura
-        with open(file_name, "r") as file: 
-            #Carga el contendio del archivo y lo convierte en un diccionario
-            return json.load(file) 
-    except FileNotFoundError: 
-        #si el archivo no existe, retorna un diccionario con listas vacias para clientes, stock y facturas
-        return {"Clientes" : [], "Stock": [], "Facturas": [] } 
+    # Abre el archivo en modo de lectura
+    with open(file_name, "r") as file: 
+    # Carga el contendio del archivo y lo convierte en un diccionario
+        return json.load(file)
 
 # Funcion para guardar datos en un archivo JSON
 def save_data(file_name, data):
-    #Abre el archivo en modo de escritura
+    # Abre el archivo en modo de escritura
     with open(file_name, "w") as file: 
-        #Convierte el diccionario a JSON y lo escribe en el archivo
+        # Convierte el diccionario a JSON y lo escribe en el archivo
         json.dump(data, file, indent=4) 
     print("Los datos fueron guardados con exito")
 
-# Funcion para crear la estructura inicial de las tablas en JSON
+# Funcion para crear la estructura inicial de los diccionarios en JSON
 def initialize_data():
-    if not os.path.exists("database.json"):
-        # Crea un diccionario con listas vacias para clientes, stock y facturas
+    if not os.path.exists("database.json"): # Si no esta creada la base de datos
+        print("Iniciando programa \n Agregue Contraseña de Administrador")
+        # Se añade la contraseña y la pregunta de recuperación
+        password = str(input("Nueva Contraseña: "))
+        pregunta = str(input("Pregunta de Recuperación : "))
+        respuesta = str(input("Respuesta: "))
+        # Crea un diccionario con listas vacias para clientes, stock, facturas, etc.
         data = {
+            "Contrasena": [password],
+            "Pregunta": [pregunta],
+            "Respuesta": [respuesta],
             "Clientes": [],
             "Stock": [],
             "Facturas": [],
         }
-        # Guardar el diccionario en un archivo JSON
+        # Guarda el diccionario en un archivo JSON
         save_data("database.json", data)
         print("Datos inciales creados en database.json")
-    else:
-        print("El archivo JSON ya existe. No se realizaron cambios")
+    else: # Si ya existe la base de datos se imprime el siguiente mensaje
+        print("\nEl archivo JSON ya existe. No se realizaron cambios") 
 ```
 ***
 ### Interfaz Gráfica y sistema modular
@@ -322,98 +327,134 @@ Bienvenido al auxiliar de Negocios Kevlab \n
     """
 ```
 ***
+### Funcion principal para acceso de administrador
+En esta función se implementa el sistema de autenticación mediante contraseña para realizar acciones sensibles, como añadir y eliminar productos del stock. El proceso inicia solicitando al administrador del negocio una contraseña de acceso, posteriormente cuando se requiera añadir o eliminar un producto, se solicita que ingrese la contraseña. Si la contraseña es correcta, se procede a mostrar un menú de opciones para gestionar el inventario. Si la contraseña es incorrecta, se informa al usuario y se termina el proceso.
+Esto tiene un metodo de recuperacion basado en pregunta respuesta definido por el administrador.
+```python
+# Funcion para validar el acceso de un administrador
+def accessoAdmin(funcion):
+    # Se carga la información del JSON
+    data = load_data("database.json")
+    print("Tienes 3 intentos")
+    # Se declaran e inicializan las variables
+    password = str(input("Ingrese la contraseña: "))
+    iteracion: int = 1
+    acierto : bool = False
+    # Si acierta la contraseña se actualiza la bandera "acierto"
+    if password == data["Contrasena"][0]:
+        acierto = True
+    if acierto == False: # Sino, se dan 2 intentos más para ello
+        while (iteracion < 3):
+            iteracion += 1
+            print("Contraseña incorrecta \nIntenta denuevo")
+            password = str(input("Ingrese la contraseña: "))
+            if password == data["Contrasena"][0]:
+                acierto = True
+                break
+
+    # Si no se acertó la contraseña se dan 3 intentos para responder la pregunta de recuperación
+    if acierto == False:
+        iteracion = 1
+        print("Acabaste los intentos permitidos, tienes 3 intentos para recuperar la contraseña con la pregunta de recuperación")
+        while (iteracion < 4):
+            iteracion += 1
+            print(data["Pregunta"][0])
+            respuesta = str(input("La respuesta es: "))
+            if respuesta == data["Respuesta"][0]:
+                print(f"Correcto, la contraseña guardada es: {data["Contrasena"][0]}, no la olvides")
+                acierto = True # Si aciertan, se actualiza la bandera y se rompe el ciclo
+                break
+            else:
+                print("Incorrecto")
+                print("No se pudo recuperar la contraseña")
+    if acierto == True: # Si en algún momento se acertó, al final se redirige a la función deseada
+        funcion()       
+
+```
+
+***
 ### Funcion principal para gestionar la entrada de datos de una factura
 En esta función se lleva a cabo el proceso de facturar una compra, para esto se carga el archivo y se obtiene el stock de cada producto del inventario, se ingresa el cliente y se registra si aún no lo está, luego se busca por el ID el producto y se digita las unidades que se desean adquirir, si cualquiera de estos datos no concuerda se regresa a ingresar el código y unas unidades aceptables, cuando ello suceda, se registrará la compra y la factura en la base de datos, se reducirá el stock del producto y se imprimirá la factura con la fecha exacta.
 
 ```python
-#Funcion para gestionar la entrada de datos de una factura
-def datafact():
+def crearfact():
     # Cargar los datos desde el archivo JSON
     data = load_data("database.json")
 
-    #Solicitar la cedula/ID del cliente
+    # Se solicitan los datos del cliente
     cc = int(input("C.C: "))
-
+    mp = str(input("Pago en Efectivo o por Tarjeta: "))
+    contacto = str(input("Se enviará la factura a (email o teléfono): "))
     fecha = datetime.now().strftime("%Y-%m-%d")
 
-    #Agrega el cliente a la lista de Clientes si no está registrado
+    # Agrega el cliente a la lista de Clientes si no está registrado
     if not any(cliente["ID"] == cc for cliente in data["Clientes"]):
-        data["Clientes"].append({"ID": cc, "Metodo_Pago": None, "Valor_Total_Compras": 0})
+        Nombre = str(input("Ingresa el nombre del cliente: "))
+        Apellido = str(input("Y su primer apellido: "))
+        data["Clientes"].append({"ID": cc, "Nombre": Nombre,"Apellido": Apellido,"Facturas": []})
 
-    total_factura = 0
-    productos_comprados = []
+    # Se declaran e inicializan las variables
+    total_factura: float = 0 
+    productos_comprados: list = []
 
     # Bucle para ingresar productos
     while True:
         codeprod = input("Codigo: ")
         if codeprod == "": 
-            #Rompe el bucle si el codigo está vacio
+            # Rompe el bucle si el codigo está vacio
             break
         codeprod = int(codeprod)
 
-        #Obtener los detalles del producto
+        # Se obtienen los detalles del producto
         datos_producto = ustock(codeprod, data)
         if datos_producto is None:
             print("Producto no encontrado.")
             continue
         
-        # Verificar si el producto tiene un stock válido
+        # Se verifica si el producto tiene un stock válido
         if datos_producto['Stock'] is None:
             print("Producto no encontrado.")
             continue
         
         unit = int(input("Unidades: "))
 
-        # Verificar si hay suficiente stock
+        # Se verifica si hay suficiente stock
         if unit > datos_producto["Stock"]:
             print(f"Stock insuficiente para el producto {datos_producto['Producto']}, solo quedan {datos_producto['Stock']} unidades.")
             continue
 
-        #Calcular el subtotal para este producto
+        # Calcula el subtotal para este producto
         subtotal = datos_producto["PrecioU"] * unit
         total_factura += subtotal
 
-        #Agrega el producto a la lista de productos comprados
+        # Agrega el producto a la lista de productos comprados
         productos_comprados.append((codeprod, datos_producto["Producto"], datos_producto["Marca"], datos_producto["Presentacion"], datos_producto["PrecioU"],unit, subtotal))
 
         # Actualiza el stock del producto
         datos_producto["Stock"] -= unit
     
     save_data("database.json", data)
-    
-    # Agregar la factura a la lista de facturas
+
+    # Agrega la factura a la lista de facturas
     data["Facturas"].append({
-        "Factura_id": len(data["Facturas"]) + 1, # Incrementa el ID de factura
+        "Factura_id": len(data["Facturas"]) + 1, # Incrementa en 1 el ID de factura
         "Cliente_id": cc,
+        "Contacto": contacto,
+        "MetodoPago": mp,
         "Fecha": fecha,
         "Total": total_factura,
         "Productos": productos_comprados
     })
-
-    #Guardar los cambios en el archivo JSON
+    # Guarda los cambios en el archivo JSON
     save_data("database.json", data)
 
-    #Imprimir la información de la factura
-    def imprimir_factura(factura):
-        print(f"\nFactura ID: {factura['Factura_id']}")
-        print(f"Fecha: {factura['Fecha']}")
-        print(f"Cliente ID: {factura['Cliente_id']}")
-        print("\nDetalle de Productos:")
-        
-        # Encabezado
-        print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Unidades':<10} {'Subtotal':<10}")
-        print("="*85)
-        
-        # Datos de productos
-        for producto in factura['Productos']:
-            print(f"{producto[0]:<10} {producto[1]:<20} {producto[2]:<15} {producto[3]:<15} {producto[4]:<15.2f} {producto[5]:<10} {producto[6]:<10.2f}")
-        
-        # Total
-        print("\nTotal de la Factura:")
-        print(f"Total: {factura['Total']:.2f}")
-
-    # Llamar a la función para imprimir la última factura agregada
+    # Se llama a la función para imprimir la última factura agregada
     ultima_factura = data["Facturas"][-1]  # Obtiene la última factura agregada
+    for cliente in data["Clientes"]:
+        if cliente["ID"] == ultima_factura["Cliente_id"]:
+            cliente = {"ID":cliente["ID"],"Nombre":cliente["Nombre"],"Apellido":cliente["Apellido"],"Facturas":cliente["Facturas"].append(ultima_factura["Factura_id"])}
+    save_data("database.json", data)
+
     imprimir_factura(ultima_factura)
 ```
 ***
@@ -422,53 +463,75 @@ Para agregar un dato al inventario se abre el archivo y cargan sus datos, luego 
 
 Por otra parte, para eliminar un producto se abre el archivo y esta misma lista donde se encuentra cada producto, se busca por el ID ingresado y se elimina de la lista.
 ```python
-# Función para gestionar la entrada de datos de stock
 def datastock():
+    # Se carga la información del JSON
     data = load_data("database.json")
     while True:
-        print("Ingrese los datos del producto (ID vacio para finalizar): ")
+        try:
+            print("Ingrese los datos del producto (Digite ENTER para finalizar): ")
+            # Se solicita el ID del producto
+            producto_id = int(input("ID del Producto: "))
 
-        # Solicitar el ID del producto
-        producto_id = input("ID del Producto: ")
-        if producto_id == "":
-            break
+            # Se solicitan otros detalles del producto
+            
+            # Nombre
+            Producto = input("Nombre del Producto: ")
+            if Producto == "":
+                break
+            
+            # Marca
+            Marca = input("Marca: ")
+            if Marca == "":
+                break
+            
+            # Presentación
+            Presentacion = input("Presentación: ")
+            if Presentacion == "":
+                break
+            
+            # Precio Unitario
+            PrecioU = input("Precio: ")
+            if PrecioU == "":
+                break
 
-        # Solicitar otros detalles del producto
-        Producto = input("Nombre del Producto: ")
-        if Producto == "":
+            # Stock
+            stock = input("Cantidad en Stock: ")
+            if stock == "":
+                break
+            
+            # Agregar el producto a la lista de Stock
+            data["Stock"].append({
+                "Producto_id": producto_id,
+                "Producto": Producto,
+                "Marca": Marca,
+                "Presentacion": Presentacion,
+                "PrecioU": float(PrecioU),
+                "Stock": int(stock)
+            })
+        except ValueError:
+            print("ID inválido, intenta denuevo")
             break
-        
-        Marca = input("Marca: ")
-        if Marca == "":
-            break
-
-        Presentacion = input("Presentación (kg): ")
-        if Presentacion == "":
-            break
-        
-        PrecioU = input("Precio: ")
-        if PrecioU == "":
-            break
-
-        stock = input("Cantidad en Stock: ")
-        if stock == "":
-            break
-
-        # Agregar el producto a la lista de Stock
-        data["Stock"].append({
-            "Producto_id": producto_id,
-            "Producto": Producto,
-            "Marca": Marca,
-            "Presentacion": Presentacion,
-            "PrecioU": float(PrecioU),
-            "Stock": int(stock)
-        })
-
         #Guardar los cambios
-        save_data("database.json", data)
+    save_data("database.json", data)
 ```
 ```python
-#Funcion para eliminar un producto
+# Función para eliminar un producto del inventario
+def deletestock():
+    while True:
+        # Se busca el ID ingresado y se elimina el producto si existe, sino se reporta que no lo hace
+        try:
+            product_id= int(input("Ingrese el ID del producto a eliminar: "))
+            data = load_data("database.json")
+            if delete_product(product_id, data):
+                save_data("database.json", data)
+                print(f"El producto con ID {product_id} fue eliminado con exito")
+            else:
+                print(f"Producto con id {product_id} no encontrado")
+        except ValueError:
+            print("Valor inválido, por favor intente otra vez")
+```
+eliminar el producto ingresado en la función anterior
+```python
 def delete_product(product_id, data):
     # Obtener la lista de stock
     stock_list = data.get("Stock", [])
@@ -478,25 +541,24 @@ def delete_product(product_id, data):
     # Buscar el producto con el ID dado
     for i in range(len(stock_list)):
         if int(stock_list[i]["Producto_id"]) == product_id:
-            # Eliminar el producto de la lista
+        # Eliminar el producto de la lista
             del stock_list[i]
-            return True
-    return False
 ```
 ***
 ### Funciones para ver y buscar en el inventario
 Para poder visualizar el inventario primeramente se pregunta al usuario el criterio por el cual se van a ordenar los productos, en este caso se cuenta con dos, el precio y el ID, además de esto se debe ingresar si se desea un orden ascendente o descendente, esto dependiendo de cómo le sea más útil al usuario dicha información, para luego ordenar la lista de stock con base a los criterios seleccionados e imprimir los resultados.
 ```python
-def inventShow(Interfaces: dict, bandera : bool):
-    while bandera == True:
+def inventShow(Interfaces: dict):
+    while True:
         print(Interfaces["Visibilidad"])
+        # Se escoge el criterio por el cuál mostrar el inventario
         try:
             a = int(input("Seleccione una opción: "))
         except ValueError:
             print("Por favor, ingrese un número entero válido.")
             continue
         # Ejecutar la opción seleccionada
-        match a:
+        match a: # Se confirma al usario el criterio seleccionado
             case 1:
                 print("Filtro establecido: Por costo")
                 a = 1
@@ -510,12 +572,13 @@ def inventShow(Interfaces: dict, bandera : bool):
         
         print(Interfaces["Orden"])
         try:
+        # Se elige el orden por el cuál se muestra el inventario
             b = int(input("Seleccione una opción: "))
         except ValueError:
             print("Por favor, ingrese un número entero válido.")
             continue 
         # Ejecutar la opción seleccionada
-        match b:
+        match b: # Se le confirma al usuario el orden seleccionado
             case 1:
                 print("Orden establecido: Ascendente")
                 b = 1
@@ -527,15 +590,15 @@ def inventShow(Interfaces: dict, bandera : bool):
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
         
-        mostrarInvent(a, b)
+        mostrarInvent(a, b) # Se llama a la función para mostrar el inventario con los criterios ya ingresados
 
-#Funcion para mostrar el inventario basado en los dos criterios anteriores
+# Función para mostrar el inventario según los criterios anteriores
 def mostrarInvent(a:int, b:int):
+    # Se carga la información del JSON, y de ella la lista de productos
     data = load_data("database.json")
     stock_list = data.get("Stock", [])
-    print("Funcion aún por diseñar")
-
-    #Ordenar la lista en funcion del criterio seleccionado
+    
+    # Se ordena la lista en función del criterio y el orden seleccionado
     if a == 1:
         stock_list.sort(key=lambda x: x["PrecioU"], reverse=(b==2))
     elif a == 2:
@@ -543,29 +606,37 @@ def mostrarInvent(a:int, b:int):
     print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
     for producto in stock_list:
         print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
+
 ```
 A su vez, para buscar algún producto se utiliza una estrategia similar, se carga la información del archivo y se obtiene la lista de stock, de donde por medio del nombre o del ID el usuario busca el producto deseado.
 ```python
-#Funcion para buscar un producto
 def search_product(criterio):
+    # Se carga la información del JSON y con ello la lista de productos
     data = load_data("database.json")
     stock_list = data.get("Stock", [])
+
+    # Si se busca por el nommbre del producto
     if criterio == 1:
         nombre = input("Ingrese el nombre del producto: ").strip().lower()
         resultados = [producto for producto in stock_list if nombre in producto["Producto"].strip().lower()]
+
+    # Si se busca por el ID del producto
     elif criterio == 2:
         try:
-            producto_id = int(input("Ingrese el ID del producto: ").strip())
-            resultados = [producto for producto in stock_list if int(producto["Producto_id"]) == producto_id]
+            producto_id = int(input("Ingrese el ID del producto: "))
+            resultados = [producto for producto in stock_list if (producto["Producto_id"]) == producto_id]
         except ValueError:
             print("ID inválido, Debe ser un número entero")
             resultados = []
+
+    # Si se encuentra el producto, se imprimen los resultados
     if resultados:
         print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Stock':<10}")
         for producto in resultados:
             print(f"{producto['Producto_id']:<10} {producto['Producto']:<20} {producto['Marca']:<15} {producto['Presentacion']:<15} {producto['PrecioU']:<15} {producto['Stock']:<10}")
     else:
         print("No se encontraron productos que coincidan con los criterios de búsqueda.")
+
 ```
 ***
 ### Funciones de estadisticas
@@ -592,8 +663,9 @@ def stats(Interfaces: dict, bandera : bool): # Menu de estadisticas
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
-
-# Función para ver estadísticas de venta
+```
+Estadísticas de venta
+```python
 def sellstats(Interfaces: dict, bandera : bool): 
     while bandera == True:
         print(Interfaces["Ventas"])
@@ -613,8 +685,9 @@ def sellstats(Interfaces: dict, bandera : bool):
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
-# Función para ver estadísticas de clientes
+```
+estadísticas de clientes
+```python
 def statsclients(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["Clientes"])
@@ -634,8 +707,9 @@ def statsclients(Interfaces: dict, bandera : bool):
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
-# Función para ver estadísticas del inventario
+```
+Estadísticas del inventario
+```python
 def budgetstats(Interfaces: dict, bandera : bool):
     while bandera == True:
         print(Interfaces["InvenStats"])
@@ -716,8 +790,9 @@ def idclientsord():
         idclientesfact.append(i.get("Cliente_id"))
     idfactn = set(idclientesfact)
     return idfactn
-
-# Función para contar la cantidad de facturas por cada cliente e imprimir el cliente con mayor cantidad de estas
+```
+cantidad de facturas por cada cliente e imprimir el cliente con mayor cantidad de estas
+```python
 def clientemascompras():
     data = load_data("database.json") 
     while bandera == True:
@@ -788,9 +863,9 @@ def promxclcom():
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
-
+```
 - Productos con Bajo Stock
-
+```python
 # Se ingresa un valor mínimo que debe tener de stock los productos, si alguno tiene menos se imprime
 def bajostock():
     bandera: bool = False
@@ -808,22 +883,30 @@ def bajostock():
 ```
 - Valor total del inventario
 ```python
-# Se cuenta el valor total de cada producto, multiplicando su precio unitario por su stock, se suman estos y se obtiene el valor del inventario
+# Función para mostrar el valor total del inventario actual
 def valtotinv():
-   vltotal = 0
+   # Se inicializan las variables
+   vltotal : float = 0
    data = load_data("database.json") 
+
+   # En el bucle se acumula el precio unitario de cada producto, multiplicado por su stock
    for i in data['Stock']:
        vltotal += i['Stock']*i['PrecioU']
-   print(F"El valor Total del inventario es {int(vltotal)}")
+   print(F"El valor Total del inventario es {float(vltotal)}")
+       
 ```
 ***
 ### Función Main y Apartado Gráfico en detalle
 Contiene las interfaces que ya se describieron, se llaman a las funciones para inicializar la base de datos y se imprime la interfaz del menú.
 ```python
-# Se declaran las variables contenedoras de interfaces y se llaman a las funciones
+# Función main para dar inicio al programa
 if __name__ == "__main__":
+
+    # Se llama a la función para crear la base de datos si no existe
     initialize_data()
-    bandera : bool = True
+
+    # Se declaran e inicializan las variables que serán utilizadas
+    bandera: bool = True
     I1 : str = """
 Bienvenido al auxiliar de Negocios Keyfact \n
     |        Menú Principal       |
@@ -838,82 +921,87 @@ Bienvenido al auxiliar de Negocios Keyfact \n
         |  1  |  Editar inventario    |
         |  2  |  Ver inventario       |
         |  3  |  Buscar producto      |
-        |  4  |       Atras           |
+        |  4  |       Atrás           |
     """
-    
     I3 : str = """
         Editar Inventario
         |    Seleccione una opción    |
         |  1  | Añadir Producto       |
         |  2  | Eliminar Producto     |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
-
     I4 : str = """
-        Mostrar inventario
+        Criterio de Organización
         |    Seleccione una opción    |
         |  1  | Por costo             |
         |  2  | Por ID                |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
     I5 : str = """
-        Mostrar inventario
+                  Orden
         |    Seleccione una opción    |
         |  1  | Ascendente            |
         |  2  | Descendente           |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
-
     I6 : str = """
         Opciones de Búsqueda:
         |    Seleccione una opción    |
         |  1  |  Por nombre           |
         |  2  |  Por ID               |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
-
     I7 : str = """
+        |           Facturas          |
+        |  1  |        Crear          |
+        |  2  |    Ver por número     |
+        |  3  |    Ver por cliente    |
+        |  4  |       Atrás           |
+    """
+    I8 : str = """
         |        Estadísticas         |
         |  1  |       Ventas          |
         |  2  |       Clientes        |
         |  3  |       Capital         |
-        |  4  |       Atras           |
+        |  4  |       Atrás           |
     """
-    I8 : str = """
+    I9 : str = """
         |   Estadísticas de Ventas    |
         |  1  | Producto más vendido  |
         |  2  |   Ingresos totales    |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
-    I9 : str = """
+    I10 : str = """
         |  Estadísticas de Clientes   |
         |  1  |Cliente con más compras|
         |  2  |    Gasto promedio     |
-        |  3  |       Atras           |
+        |  3  |       Atrás           |
     """
-    I10 : str = """
+    I11 : str = """
         |   Estadísticas de Inventario   |
         |  1  | Productos con bajo stock |
         |  2  |Valor total del inventario|
-        |  3  |         Atras            |
+        |  3  |         Atrás            |
     """
-    I11 : str = """
+    I12 : str = """
         |   Clientes con más compras     |
         |  1  |  Por Numero de Facturas  |
         |  2  |  Por Dinero Gastado      |
-        |  3  |         Atras            |
+        |  3  |         Atrás            |
     """ 
-    I12 : str = """
+    I13 : str = """
         |           Gasto Promedio       |
         |  1  |      Por Cliente         |
         |  2  |      Por Factura         |
-        |  3  |         Atras            |
+        |  3  |         Atrás            |
     """ 
-
-    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5, "Búsqueda" : I6}
-    Interfaces.update({"Estadísticas": I7, "Ventas": I8, "Clientes": I9, "InvenStats": I10, "Clientbuy": I11, "Clientprom": I12})
-
+    # Se guardan las interfaces en un diccionario para facilitar su transporte entre funciones
+    Interfaces: dict = {"General": I1,"Inventario":I2, "Editar": I3,"Visibilidad": I4, "Orden": I5, "Búsqueda" : I6, "Facturas": I7}
+    Interfaces.update({"Estadísticas": I8, "Ventas": I9, "Clientes": I10, "InvenStats": I11, "Clientbuy": I12, "Clientprom": I13})
+    
+    # Se llama a la función del menú y se ingresan las interfaces junto con la bandera
     menu(Interfaces, bandera)
+
 ```
 ## Instrucciones de uso
 ***
