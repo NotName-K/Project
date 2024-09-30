@@ -318,7 +318,7 @@ def menu(Interfaces: dict, bandera : bool):
 
 # Ejemplo de Interfaz
 I1 : str = """
-Bienvenido al auxiliar de Negocios Kevlab \n
+Bienvenido al auxiliar de Negocios KeyFact \n
     |        Menú Principal       |
     |  1  |  Inventario           |
     |  2  |  Modo de Facturación  |
