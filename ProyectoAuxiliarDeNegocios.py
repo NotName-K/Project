@@ -39,7 +39,7 @@ def initialize_data():
         save_data("database.json", data)
         print("Datos inciales creados en database.json")
     else: # Si ya existe la base de datos se imprime el siguiente mensaje
-        print("El archivo JSON ya existe. No se realizaron cambios") 
+        print("\nEl archivo JSON ya existe. No se realizaron cambios") 
 
 # Funcion para validar el acceso de un administrador
 def accessoAdmin(funcion):
@@ -355,6 +355,8 @@ def facturas(Interfaces: dict):
             case 2:
                 verfacturas(Interfaces)
             case 3:
+                verfacturaCliente()
+            case 4:
                 break
             case _:
                 print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
@@ -372,7 +374,7 @@ def crearfact():
 
     # Agrega el cliente a la lista de Clientes si no está registrado
     if not any(cliente["ID"] == cc for cliente in data["Clientes"]):
-        data["Clientes"].append({"ID": cc, "Ultimo_Metodo_Pago": None, "Valor_Total_Compras": 0})
+        data["Clientes"].append({"ID": cc, "Facturas": []})
 
     # Se declaran e inicializan las variables
     total_factura: float = 0 
@@ -431,6 +433,11 @@ def crearfact():
 
     # Se llama a la función para imprimir la última factura agregada
     ultima_factura = data["Facturas"][-1]  # Obtiene la última factura agregada
+    for cliente in data["Clientes"]:
+        if cliente["ID"] == ultima_factura["Cliente_id"]:
+            cliente = {"ID":cliente["ID"],"Facturas":cliente["Facturas"].append(ultima_factura["Factura_id"])}
+    save_data("database.json", data)
+
     imprimir_factura(ultima_factura)
 
 # Función para ver todas las facturas
@@ -441,8 +448,14 @@ def verfacturas(Interfaces: dict):
 
     # Se crea el intervalo del que se tomaran las facturas
     print("Crea un intervalo de facturas para reducir la cantidad mostrada junta")
-    min = int(input("Ingresa el valor mínimo: "))
-    max = int(input("Ingresa el valor máximo: "))
+    while True:
+        try:
+            min = int(input("Ingresa el valor mínimo: "))
+            max = int(input("Ingresa el valor máximo: "))
+            break
+        except ValueError:
+            print("Valor inválido, digite valores numéricos enteros para continuar\n")
+            continue
 
     # Se imprimen las facturas que cumplan con estar dentro del intervalo
     print(f"{'ID':<10} {'Cliente':<15} {'Contacto':<25} {'Método de Pago':<15} {'Fecha':<15} {'Total':<20}")
@@ -452,13 +465,70 @@ def verfacturas(Interfaces: dict):
             print(f"{factura['Factura_id']:<10} {factura['Cliente_id']:<15} {factura['Contacto']:<25} {factura['MetodoPago']:<15} {factura['Fecha']:<15} {factura['Total']:<20}")
     if bandera == False: # Si ninguna lo hace se imprime este mensaje
         print("No se encontraron facturas con ID's entre dichos valores")
-    Elección = int(input("Qué factura deseas ver? "))
+    
+    while True:
+        try:
+            Elección = int(input("Qué factura deseas ver? "))
+            # Se hace un bucle para obtener la factura deseada
+            for factura in listaDeFacturas:
+                if Elección == factura['Factura_id']:
+                    facturaSeleccionada = factura
+            # Se llama a la función para imprimir la factura elegida
+            imprimir_factura(facturaSeleccionada)
+            break
+        except ValueError:
+            print("ID inválido, por favor ingrese un número entero\n")
+            continue
+        except UnboundLocalError:
+            print("Factura no existente, por favor ingrese una válida\n")
 
+# Función para ver las facturas de cada cliente
+def verfacturaCliente():
+    # Se carga la información del JSON, y de ella se obtiene la lista de facturas
+    data = load_data("database.json")
+    listaDeClientes : list = data.get("Clientes", [])
+    listaDeFacturas : list = data.get("Facturas", [])
+    bandera: bool = False
+
+    # Se imprimen los clientes
+    print(f"{'ID de los clientes':<20}")
+    for cliente in listaDeClientes:
+        bandera = True
+        print(f"{cliente['ID']:<20}")
+    if bandera == False:
+        print("Actualmente no se tiene registrado ningún cliente")
+    while True:
+        try:
+            ID = int(input("\nIngresa el ID del cliente para ver sus facturas: "))
+            break
+        except ValueError:
+            print("ID inválida, por favor ingrese un valor numérico entero válido\n")
+    bandera = False
+    # Se imprimen las facturas que cumplan con estar dentro del intervalo
+    print(f"{'ID':<10} {'Cliente':<15} {'Contacto':<25} {'Método de Pago':<15} {'Fecha':<15} {'Total':<20}")
     for factura in listaDeFacturas:
-        if Elección == factura['Factura_id']:
-            facturaSeleccionada = factura
-    # Se llama a la función para imprimir la factura elegida
-    imprimir_factura(facturaSeleccionada)
+        if factura['Cliente_id'] == ID:
+            bandera = True
+            print(f"{factura['Factura_id']:<10} {factura['Cliente_id']:<15} {factura['Contacto']:<25} {factura['MetodoPago']:<15} {factura['Fecha']:<15} {factura['Total']:<20}")
+    if bandera == False: # Si ninguna lo hace se imprime este mensaje
+        print("No se encontraron facturas con dicho ID")
+        return
+    
+    while True:
+        try:
+            Elección = int(input("Qué factura deseas ver? "))
+                # Se hace un bucle para obtener la factura deseada
+            for factura in listaDeFacturas:
+                if Elección == factura['Factura_id']:
+                    facturaSeleccionada = factura
+            # Se llama a la función para imprimir la factura elegida
+            imprimir_factura(facturaSeleccionada)
+            break
+        except ValueError:
+            print("ID inválido, por favor ingrese un número entero\n")
+            continue
+        except UnboundLocalError:
+            print("Factura no existente, por favor ingrese una válida\n")
 
 # Función para imprimir la información de la factura
 def imprimir_factura(factura):
@@ -793,7 +863,8 @@ Bienvenido al auxiliar de Negocios Keyfact \n
         |           Facturas          |
         |  1  |        Crear          |
         |  2  |    Ver por número     |
-        |  3  |       Atrás           |
+        |  3  |    Ver por cliente    |
+        |  4  |       Atrás           |
     """
     I8 : str = """
         |        Estadísticas         |
