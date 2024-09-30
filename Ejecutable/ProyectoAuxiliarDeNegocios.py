@@ -178,6 +178,17 @@ def datastock():
             # Se solicita el ID del producto
             producto_id = int(input("ID del Producto: "))
 
+            #Verificar si la id ya está en uso
+            id_encontrado = False
+            for producto in data["Stock"]:
+                if int(producto["Producto_id"]) == producto_id:
+                    id_encontrado = True
+                    break
+            
+            if id_encontrado:
+                print(f"Error: El producto con ID {producto_id} ya existe")
+                continue
+
             # Se solicitan otros detalles del producto
             
             # Nombre
