@@ -50,7 +50,7 @@ Teniendo eso en cuenta se creó un diseño modular en el que cada función se en
  A -->F1[Se carga/crea la base de datos];
     F1 -->B{Menú Principal};
        B -->|Opción 1|C{Inventario};
-       B -->|Opción 2|R[Modo de Facturación];
+       B -->|Opción 2|R{Modo de Facturación};
        B -->|Opción 3|S{Estadísticas};
        B -->|Opción 4|C1[Terminar programa];
        C1 -->D1(Fin);
@@ -220,7 +220,7 @@ B[Menú] -->|Opción 3|SS{Estadísticas};
         ZZ -->|Regresar|SS; 
 
 
-B{Menú} -->|Opción 2|A[Modo de Facturación];
+B{Menú} -->|Opción 2|A{Modo de Facturación};
     A -->C[Crear];
     A -->D[Ver factura por ID de Factura];
     A -->E[Ver factura por ID de cliente];
