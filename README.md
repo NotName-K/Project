@@ -467,6 +467,78 @@ def crearfact():
 
     imprimir_factura(ultima_factura)
 ```
+* Funcion para Mostrar una Factura segun su ID o segun ID del Cliente
+```python
+def verfacturaCliente():
+    # Se carga la información del JSON, y de ella se obtiene la lista de facturas
+    data = load_data("database.json")
+    listaDeClientes : list = data.get("Clientes", [])
+    listaDeFacturas : list = data.get("Facturas", [])
+    bandera: bool = False
+
+    # Se imprimen los clientes
+    print(f"{'ID':<10} {'Nombre':<20} {'Apellido':<20}")
+    for cliente in listaDeClientes:
+        bandera = True
+        print(f"{cliente['ID']:<10} {cliente['Nombre']:<20} {cliente['Apellido']:<20}")
+    if bandera == False:
+        print("Actualmente no se tiene registrado ningún cliente")
+    while True:
+        try:
+            ID = int(input("\nIngresa el ID del cliente para ver sus facturas: "))
+            break
+        except ValueError:
+            print("ID inválida, por favor ingrese un valor numérico entero válido\n")
+    bandera = False
+    # Se imprimen las facturas que cumplan con estar dentro del intervalo
+    print(f"{'ID':<10} {'Cliente':<15} {'Contacto':<25} {'Método de Pago':<15} {'Fecha':<15} {'Total':<20}")
+    for factura in listaDeFacturas:
+        if factura['Cliente_id'] == ID:
+            bandera = True
+            print(f"{factura['Factura_id']:<10} {factura['Cliente_id']:<15} {factura['Contacto']:<25} {factura['MetodoPago']:<15} {factura['Fecha']:<15} {factura['Total']:<20}")
+    if bandera == False: # Si ninguna lo hace se imprime este mensaje
+        print("No se encontraron facturas con dicho ID")
+        return
+    
+    while True:
+        try:
+            Elección = int(input("Qué factura deseas ver? "))
+                # Se hace un bucle para obtener la factura deseada
+            for factura in listaDeFacturas:
+                if Elección == factura['Factura_id']:
+                    facturaSeleccionada = factura
+            # Se llama a la función para imprimir la factura elegida
+            imprimir_factura(facturaSeleccionada)
+            break
+        except ValueError:
+            print("ID inválido, por favor ingrese un número entero\n")
+            continue
+        except UnboundLocalError:
+            print("Factura no existente, por favor ingrese una válida\n")
+
+# Función para imprimir la información de la factura
+def imprimir_factura(factura):
+
+    # Se imprimen los datos de la factura de forma organizada
+    print(f"\nFactura ID: {factura['Factura_id']}")
+    print(f"Fecha: {factura['Fecha']}")
+    print(f"Cliente ID: {factura['Cliente_id']}")
+    print(f"Método de pago: {factura['MetodoPago']}")
+    print(f"Se enviará la factura a: {factura['Contacto']}")
+    print("\nDetalle de Productos:")
+        
+    # Encabezado
+    print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Unidades':<10} {'Subtotal':<10}")
+    print("="*110)
+    
+    # Datos de productos
+    for producto in factura['Productos']:
+        print(f"{producto[0]:<10} {producto[1]:<20} {producto[2]:<15} {producto[3]:<15} {producto[4]:<15.2f} {producto[5]:<10} {producto[6]:<10.2f}")
+        
+    # Total
+    print("\nTotal de la Factura:")
+    print(f"Total: {factura['Total']:.2f}")
+```
 ***
 ### Funciones para gestionar la entrada de datos de stock (agregar, eliminar)
 Para agregar un dato al inventario se abre el archivo y cargan sus datos, luego se indican todos los datos asociados al producto (ID, Nombre, Marca, Presentación, Precio, Unidades en stock), se añade a la lista de stock y se guardan los cambios.
