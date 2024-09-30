@@ -906,11 +906,11 @@ Para instalar el programa hay que seguir los pasos descritos a continuación:
   
   Si estas usando Windows puedes comprobar que la instalación haya funcionado abriendo la consola de Windows, presionando (win + r), y escribir "python --version", si funcionó debería responder con la versión descargada y ya se tendría al interprete instalado, no obstante, si no funcionó tendrás que descargalo directamente en la tienda de Microsoft para luego ya realizar comprobación y muy seguramente ya habrá funcionado.
   
-- **Segundo**: Debes descargar el [programa](https://github.com/NotName-K/Project/blob/main/ProyectoAuxiliarDeNegocios.py) de python y abrirlo en un editor de código como puede ser [Visual Studio Code](https://code.visualstudio.com/download), o si prefieres descarga el archivo rar desde [este enlace](https://github.com/NotName-K/Project/blob/main/PAN.rar) y extraelo en una carpeta, encontrarás el archivo ejecutable del programa adentro de la carpeta "dist".
+- **Segundo**: Debes descargar el [programa](https://github.com/NotName-K/Project/blob/main/ProyectoAuxiliarDeNegocios.py) de python y abrirlo en un editor de código como puede ser [Visual Studio Code](https://code.visualstudio.com/download), o si prefieres descarga el archivo .exe desde [este enlace](https://github.com/NotName-K/Project/blob/main/ProyectoAuxiliarDeNegocios.exe) y ejecutalo. 
 
 ### Cómo utilizarlo
 
-En caso de preferir el archivo .exe, simplemente ejecutalo dentro de la carpeta que encontrarás al descomprimir el archivo "PAN.rar"
+En caso de preferir el archivo .exe, simplemente ejecutalo después de descargarlo.
 
 Si el usuario utiliza el editor de código, debe utilizar la opción "File" en el extremo superior izquierdo de la interfaz de Visual Studio y seleccionar "Open New File", en la venta emergente ha de ubicar y abrir el archivo "ProyectoAuxiliarDeNegocios.py", de ahí utiliza el símbolo de "Play" o "Resumir" en la esquina superior derecha del editor, esta tiene como nombre "Run Python File", al hacer click esta dará inicio al programa.
 
