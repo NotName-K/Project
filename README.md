@@ -463,6 +463,7 @@ Para agregar un dato al inventario se abre el archivo y cargan sus datos, luego 
 
 Por otra parte, para eliminar un producto se abre el archivo y esta misma lista donde se encuentra cada producto, se busca por el ID ingresado y se elimina de la lista.
 ```python
+# Función para añadir un producto al inventario
 def datastock():
     # Se carga la información del JSON
     data = load_data("database.json")
@@ -471,6 +472,17 @@ def datastock():
             print("Ingrese los datos del producto (Digite ENTER para finalizar): ")
             # Se solicita el ID del producto
             producto_id = int(input("ID del Producto: "))
+
+            #Verificar si la id ya está en uso
+            id_encontrado = False
+            for producto in data["Stock"]:
+                if int(producto["Producto_id"]) == producto_id:
+                    id_encontrado = True
+                    break
+            
+            if id_encontrado:
+                print(f"Error: El producto con ID {producto_id} ya existe")
+                continue
 
             # Se solicitan otros detalles del producto
             
@@ -513,6 +525,7 @@ def datastock():
             break
         #Guardar los cambios
     save_data("database.json", data)
+
 ```
 ```python
 # Función para eliminar un producto del inventario
