@@ -454,8 +454,11 @@ def verfacturas(Interfaces: dict):
         print("No se encontraron facturas con ID's entre dichos valores")
     Elección = int(input("Qué factura deseas ver? "))
 
+    for factura in listaDeFacturas:
+        if Elección == factura['Factura_id']:
+            facturaSeleccionada = factura
     # Se llama a la función para imprimir la factura elegida
-    imprimir_factura(data["Facturas"][Elección-1])
+    imprimir_factura(facturaSeleccionada)
 
 # Función para imprimir la información de la factura
 def imprimir_factura(factura):
