@@ -2,7 +2,7 @@
 Proyecto de la Asignatura Programación de Computadores 2024-1
 ***
 
-![Logo-equipo.png](https://github.com/NotName-K/Project/blob/main/Imagenes/Logo-equipo.png?raw=true)
+![Logo-equipo.png](https://github.com/NotName-K/Project/blob/main/Imagenes/Logo.png?raw=true)
  
 ## Integrantes 
  * Kevin Daniel Castellanos Peña C.C. 1052338203
