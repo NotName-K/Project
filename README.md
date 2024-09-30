@@ -102,8 +102,8 @@ Cómo tal no es un apartado, está dentro del menú principal debido a su induda
 graph TD;
 B{Menú} -->|Opción 2|R[Modo de Facturación];
     R -->L1[Crear];
-    R -->L2[Ver por numero];
-    R-->L3[Ver por cliente];
+    R -->L2[Ver Factura por ID de Factura];
+    R-->L3[Ver Factura por ID de Cliente];
     L1-->U1{ID del Cliente};
     U1-->|Si no esta registrado|M1[Se registra en la base de datos];
     M1 -->W1[Pedir Varios Datos mas al cliente]
@@ -120,7 +120,7 @@ B{Menú} -->|Opción 2|R[Modo de Facturación];
     S1-->T1[Se guarda la información en el archivo];
     T1-->B;
 
-    L2 -->K2[Se muestran las facturas por Valor de compra]
+    L2 -->K2[Se muestran las facturas por ID de Factura]
     L3 -->K3[Se muestran las facturas por ID de Cliente]
     K2 -->B
     K3 -->B
@@ -222,8 +222,8 @@ B[Menú] -->|Opción 3|SS{Estadísticas};
 
 B{Menú} -->|Opción 2|A[Modo de Facturación];
     A -->C[Crear];
-    A -->D[Ver por numero];
-    A -->E[Ver por cliente];
+    A -->D[Ver factura por ID de Factura];
+    A -->E[Ver factura por ID de cliente];
     C -->F{ID del Cliente};
     F -->|Si no está registrado|H[Pedir Varios Datos más al cliente];
     H -->G[Se registra en la base de datos];
@@ -239,7 +239,7 @@ B{Menú} -->|Opción 2|A[Modo de Facturación];
     O -->P[Se guarda la información en el archivo];
     P -->B;
 
-    D -->Q[Se muestran las facturas por Valor de compra];
+    D -->Q[Se muestran las facturas por ID de Factura];
     E -->R[Se muestran las facturas por ID de Cliente];
     Q -->B;
     R -->B;
