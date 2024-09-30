@@ -355,11 +355,9 @@ def facturas(Interfaces: dict):
             case 2:
                 verfacturas(Interfaces)
             case 3:
-                print("x")
-            case 4:
                 break
             case _:
-                print("Opción no válida. Por favor, ingrese un número entre 1 y 4.")
+                print("Opción no válida. Por favor, ingrese un número entre 1 y 3.")
 
 # Función para crear una factura
 def crearfact():
@@ -458,7 +456,7 @@ def verfacturas(Interfaces: dict):
 
     # Se llama a la función para imprimir la factura elegida
     imprimir_factura(data["Facturas"][Elección-1])
-    
+
 # Función para imprimir la información de la factura
 def imprimir_factura(factura):
 
@@ -792,8 +790,7 @@ Bienvenido al auxiliar de Negocios Keyfact \n
         |           Facturas          |
         |  1  |        Crear          |
         |  2  |    Ver por número     |
-        |  3  |   Ver por cliente     |
-        |  4  |       Atrás           |
+        |  3  |       Atrás           |
     """
     I8 : str = """
         |        Estadísticas         |
