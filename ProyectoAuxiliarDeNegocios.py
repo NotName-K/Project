@@ -374,7 +374,9 @@ def crearfact():
 
     # Agrega el cliente a la lista de Clientes si no está registrado
     if not any(cliente["ID"] == cc for cliente in data["Clientes"]):
-        data["Clientes"].append({"ID": cc, "Facturas": []})
+        Nombre = str(input("Ingresa el nombre del cliente: "))
+        Apellido = str(input("Y su primer apellido: "))
+        data["Clientes"].append({"ID": cc, "Nombre": Nombre,"Apellido": Apellido,"Facturas": []})
 
     # Se declaran e inicializan las variables
     total_factura: float = 0 
@@ -435,7 +437,7 @@ def crearfact():
     ultima_factura = data["Facturas"][-1]  # Obtiene la última factura agregada
     for cliente in data["Clientes"]:
         if cliente["ID"] == ultima_factura["Cliente_id"]:
-            cliente = {"ID":cliente["ID"],"Facturas":cliente["Facturas"].append(ultima_factura["Factura_id"])}
+            cliente = {"ID":cliente["ID"],"Nombre":cliente["Nombre"],"Apellido":cliente["Apellido"],"Facturas":cliente["Facturas"].append(ultima_factura["Factura_id"])}
     save_data("database.json", data)
 
     imprimir_factura(ultima_factura)
@@ -491,10 +493,10 @@ def verfacturaCliente():
     bandera: bool = False
 
     # Se imprimen los clientes
-    print(f"{'ID de los clientes':<20}")
+    print(f"{'ID':<10} {'Nombre':<20} {'Apellido':<20}")
     for cliente in listaDeClientes:
         bandera = True
-        print(f"{cliente['ID']:<20}")
+        print(f"{cliente['ID']:<10} {cliente['Nombre']:<20} {cliente['Apellido']:<20}")
     if bandera == False:
         print("Actualmente no se tiene registrado ningún cliente")
     while True:
