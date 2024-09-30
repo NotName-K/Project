@@ -216,7 +216,7 @@ def deletestock():
                 print(f"Producto con id {product_id} no encontrado")
         except ValueError:
             print("Valor inválido, por favor intente otra vez")
-            
+
 # Funcion para eliminar el producto ingresado en la función anterior
 def delete_product(product_id, data):
     # Obtener la lista de stock
@@ -316,12 +316,13 @@ def datafact():
 
     #Solicitar la cedula/ID del cliente
     cc = int(input("C.C: "))
-
+    mp = str(input("Pago en Efectivo o por Tarjeta: "))
+    contacto = str(input("Se enviará la factura a (email o teléfono): "))
     fecha = datetime.now().strftime("%Y-%m-%d")
 
     #Agrega el cliente a la lista de Clientes si no está registrado
     if not any(cliente["ID"] == cc for cliente in data["Clientes"]):
-        data["Clientes"].append({"ID": cc, "Metodo_Pago": None, "Valor_Total_Compras": 0})
+        data["Clientes"].append({"ID": cc, "Ultimo_Metodo_Pago": None, "Valor_Total_Compras": 0})
 
     total_factura = 0
     productos_comprados = []
@@ -363,16 +364,17 @@ def datafact():
         datos_producto["Stock"] -= unit
     
     save_data("database.json", data)
-    
+
     # Agregar la factura a la lista de facturas
     data["Facturas"].append({
         "Factura_id": len(data["Facturas"]) + 1, # Incrementa el ID de factura
         "Cliente_id": cc,
+        "Contacto": contacto,
+        "MetodoPago": mp,
         "Fecha": fecha,
         "Total": total_factura,
         "Productos": productos_comprados
     })
-
     #Guardar los cambios en el archivo JSON
     save_data("database.json", data)
 
@@ -381,11 +383,13 @@ def datafact():
         print(f"\nFactura ID: {factura['Factura_id']}")
         print(f"Fecha: {factura['Fecha']}")
         print(f"Cliente ID: {factura['Cliente_id']}")
+        print(f"Método de pago: {factura['MetodoPago']}")
+        print(f"Se enviará la factura a: {factura['Contacto']}")
         print("\nDetalle de Productos:")
         
         # Encabezado
         print(f"{'ID':<10} {'Producto':<20} {'Marca':<15} {'Presentación':<15} {'Precio Unitario':<15} {'Unidades':<10} {'Subtotal':<10}")
-        print("="*85)
+        print("="*110)
     
         # Datos de productos
         for producto in factura['Productos']:
