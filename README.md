@@ -160,79 +160,89 @@ B[Menú] -->|Opción 3|S{Estadísticas};
 ```
 Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```mermaid
- graph TD;
- A(Inicio);
-    A -->F1[Se intenta abrir la base de datos];
-    F1-->|Existe|G1[Se carga el contenido];
-    F1-->|No existe|H1[Se crea diccionario con listas];
-    G1-->I1
-    H1-->I1[Se convierte el diccionario en JSON]
-    I1-->J1[Se escribe el JSON en el archivo]
-    J1-->K1[Se guarda la información en el archivo]
-    K1 -->B{Menú Principal};
-       B -->|Opción 1|C{Inventario};
-          C -->|Opción 1|D{Editar Inventario};
-              D -->|Opción 1|E[Añadir Producto];
-              E -->C;
-              D -->|Opción 2|F[Eliminar Producto];
-              F -->C;
-              D -->|Regresar|C
-          C -->|Opción 2|G{Ver Inventario};
-              G -->H{Mostrar por:};
-                 H -->|Opción 1|I[Precio];
-                 H -->|Opción 2|J[Código];
-                 H -->|Regresar|C;
-                 I -->K;
-              J -->K{Ver en Orden:};
-                 K -->|Opción 1|L[Ascendente];
-                 L -->C;
-                 K -->|Opción 2|M[Descendente];
-                 M -->C;
-                 K -->|Regresar|C;
-          C -->|Opción 3|N{Buscar producto};
-              N -->O{Buscar por:};
-                 O -->|Opción 1|P[Nombre];
-                 P -->C;
-                 O -->|Opción 2|Q[Código];
-                 Q -->C;
-                 O -->|Regresar|C;
-          C -->|Regresar|B;
-       B -->|Opción 2|R[Modo de Facturación];
-           R -->L1[Se ingresan los datos del cliente];
-           L1-->|Si no esta registrado|M1[Se registra en la base de datos];
-           L1-->N1;
-           M1-->N1[Se ingresa el código de los productos];
-           N1-->|Si no existe|N1;
-           N1-->O1[Se ingresan las unidadades por comprar];
-           O1-->P1[Unidades > Stock?];
-           P1-->|Sí|N1;
-           P1-->|No|Q1[Se registra la compra];
-           Q1-->R1[Se restan las unidades del stock];
-           R1-->S1[Se imprime la factura];
-           S1-->T1[Se guarda la información en el archivo];
-           T1-->B;
-       B -->|Opción 3|S{Estadísticas};
-          S -->|Opción 1|T{Ventas};
-              T -->|Opción 1|U[Producto más vendido];
-              U -->S;
-              T -->|Opción 2|V[Ingresos Totales];
-              V -->S;
-              T -->|Regresar|S
-          S -->|Opción 2|W{Clientes};
-              W -->|Opción 1|X[Cliente con más compras];
-              X -->S;
-              W -->|Opción 2|Y[Gasto promedio];
-              Y -->S;
-              W -->|Regresar|S
-          S -->|Opción 3|Z{Capital};
-              Z -->|Opción 1|A1[Productos con bajo stock];
-              A1 -->S;
-              Z -->|Opción 2|B1[Valor total del inventario];
-              B1 -->S;
-              Z -->|Regresar|S
-          S -->|Regresar|B;
-       B -->|Opción 4|C1[Terminar programa];
-       C1 -->D1(Fin);
+graph TD;
+B{Menú} -->CCC{Inventario};
+          CCC -->|Opción 1|DDD{Editar Inventario};
+             DDD -->ZZZ{Ingreso de Contraseña}
+              ZZZ -->|Opción 1|EEE[Añadir Producto];
+              EEE -->|si ya está..|EEE
+              EEE -->|si no está|LLL{Guardar cambios};
+              ZZZ -->|Opción 2|FFF[Eliminar Producto];
+              FFF -->LLL;
+              DDD -->|Regresar|CCC
+              LLL --> CCC
+          CCC -->|Opción 2|GGG{Ver Inventario};
+              GGG -->HHH{Mostrar por:};
+                 HHH -->|Opción 1|III[Precio];
+                 HHH -->|Opción 2|JJJ[Código];
+                 HHH -->|Regresar|CCC;
+                 III -->KKK;
+              JJJ -->KKK{Ver en Orden:};
+                 KKK -->|Opción 1|BBB[Ascendente];
+                 BBB -->KQQ{Inventario Mostrado};
+                 KKK -->|Opción 2|MMM[Descendente];
+                 MMM -->KQQ;
+                 KKK -->|Regresar|CCC;
+                 KQQ --> CCC
+          CCC -->|Opción 3|NNN{Buscar producto};
+              NNN -->OOO{Buscar por:};
+                 OOO -->|Opción 1|PPP[Nombre];
+                 PPP -->KJJ{Producto Mostrado};
+                 OOO -->|Opción 2|QQQ[Código];
+                 QQQ -->KJJ;
+                 KJJ -->|Regresar|CCC;
+
+B[Menú] -->|Opción 3|SS{Estadísticas};
+    SS -->|Opción 1|TT{Ventas};
+        TT -->|Opción 1|UU[Producto más vendido];
+        UU -->LL[Se muestra Producto] --> SS;
+        TT -->|Opción 2|VV[Ingresos Totales];
+        VV -->MM[Se muestran Ingresos Totales] --> SS;
+        TT -->|Regresar|SS;
+    SS -->|Opción 2|WW{Clientes};
+        WW -->|Opción 1|XX{Cliente con más compras};
+            XX -->|Opción 1|N1[Por número de facturas];
+            N1 -->RR[Se muestra Cliente por número de facturas] --> SS;
+            XX -->|Opción 2|N2[Por dinero gastado];
+            N2 -->R2[Se muestra Cliente por dinero gastado] --> SS;
+        WW -->|Opción 2|YY{Gasto promedio};
+            YY -->|Opción 1|O1[Por cliente];
+            O1 -->P1[Se muestra Gasto promedio por cliente] --> SS;
+            YY -->|Opción 2|O2[Por factura];
+            O2 -->P2[Se muestra Gasto promedio por factura] --> SS;
+        WW -->|Regresar|SS;
+    SS -->|Opción 3|ZZ{Capital};
+        ZZ -->|Opción 1|A1{Productos con bajo stock};
+            A1 -->|Opción 1|PP[cantidad de stock maxima requerida];
+            PP -->P3[Se muestra productos con stock menor a lo ingresado] --> SS;
+        ZZ -->|Opción 2|B1[Valor total del inventario];
+        B1 -->QQ[Se muestra Valor total del inventario] --> SS;
+        ZZ -->|Regresar|SS; 
+
+
+B{Menú} -->|Opción 2|A[Modo de Facturación];
+    A -->C[Crear];
+    A -->D[Ver por numero];
+    A -->E[Ver por cliente];
+    C -->F{ID del Cliente};
+    F -->|Si no está registrado|H[Pedir Varios Datos más al cliente];
+    H -->G[Se registra en la base de datos];
+    F -->|Si está registrado|I;
+    G -->I[Se ingresa el código de los productos];
+    I -->|Si no existe el producto|I;
+    I -->K[Se ingresan las unidades por comprar];
+    K -->L[Unidades > Stock?];
+    L -->|Sí|I;
+    L -->|No|M[Se registra la compra];
+    M -->N[Se restan las unidades del stock];
+    N -->O[Se imprime la factura];
+    O -->P[Se guarda la información en el archivo];
+    P -->B;
+
+    D -->Q[Se muestran las facturas por Valor de compra];
+    E -->R[Se muestran las facturas por ID de Cliente];
+    Q -->B;
+    R -->B;
 ```
 
 ## Solución planteada
