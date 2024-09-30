@@ -65,11 +65,13 @@ El apartado de Inventario debe incluir las opciones de añadir o eliminar produc
 graph TD;
 B{Menú} -->|Opción 1|C{Inventario};
           C -->|Opción 1|D{Editar Inventario};
-              D -->|Opción 1|E[Añadir Producto];
-              E -->C;
-              D -->|Opción 2|F[Eliminar Producto];
-              F -->C;
+             D-->zz{Ingreso de Contraseña}
+              zz -->|Opción 1|E[Añadir Producto];
+              E -->LL{Guardar cambios};
+              zz -->|Opción 2|F[Eliminar Producto];
+              F -->LL;
               D -->|Regresar|C
+              LL --> C
           C -->|Opción 2|G{Ver Inventario};
               G -->H{Mostrar por:};
                  H -->|Opción 1|I[Precio];
@@ -78,17 +80,18 @@ B{Menú} -->|Opción 1|C{Inventario};
                  I -->K;
               J -->K{Ver en Orden:};
                  K -->|Opción 1|L[Ascendente];
-                 L -->C;
+                 L -->KQ{Inventario Mostrado};
                  K -->|Opción 2|M[Descendente];
-                 M -->C;
+                 M -->KQ;
                  K -->|Regresar|C;
+                 KQ --> C
           C -->|Opción 3|N{Buscar producto};
               N -->O{Buscar por:};
                  O -->|Opción 1|P[Nombre];
-                 P -->C;
+                 P -->KJ{Producto Mostrado};
                  O -->|Opción 2|Q[Código];
-                 Q -->C;
-                 O -->|Regresar|C;
+                 Q -->KJ;
+                 KJ -->|Regresar|C;
           C -->|Regresar|B;
 ```
 - Facturación:
@@ -98,12 +101,17 @@ Cómo tal no es un apartado, está dentro del menú principal debido a su induda
 ```mermaid
 graph TD;
 B{Menú} -->|Opción 2|R[Modo de Facturación];
-    R -->L1[Se ingresan los datos del cliente];
-    L1-->|Si no esta registrado|M1[Se registra en la base de datos];
-    L1-->N1;
+    R -->L1[Crear];
+    R -->L2[Ver por numero];
+    R-->L3[Ver por cliente];
+    L1-->U1{ID del Cliente};
+    U1-->|Si no esta registrado|M1[Se registra en la base de datos];
+    M1 -->W1[Pedir Varios Datos mas al cliente]
+    U1-->|Si esta registrado|N1;
+    W1-->N1
     M1-->N1[Se ingresa el código de los productos];
     N1-->|Si no existe|N1;
-    N1-->O1[Se ingresan las unidadades por comprar];
+    N1-->O1[Se ingresan las unidadades por comprar]
     O1-->P1[Unidades > Stock?];
     P1-->|Sí|N1;
     P1-->|No|Q1[Se registra la compra];
@@ -111,6 +119,11 @@ B{Menú} -->|Opción 2|R[Modo de Facturación];
     R1-->S1[Se imprime la factura];
     S1-->T1[Se guarda la información en el archivo];
     T1-->B;
+
+    L2 -->K2[Se muestran las facturas por Valor de compra]
+    L3 -->K3[Se muestran las facturas por ID de Cliente]
+    K2 -->B
+    K3 -->B
 ```
 
 - Estadísticas:
@@ -119,25 +132,31 @@ Para el apartado de estadísticas se planteó que el usuario pueda analizar el c
 ```mermaid
  graph TD;
 B[Menú] -->|Opción 3|S{Estadísticas};
-          S -->|Opción 1|T{Ventas};
-              T -->|Opción 1|U[Producto más vendido];
-              U -->S;
-              T -->|Opción 2|V[Ingresos Totales];
-              V -->S;
-              T -->|Regresar|S
-          S -->|Opción 2|W{Clientes};
-              W -->|Opción 1|X[Cliente con más compras];
-              X -->S;
-              W -->|Opción 2|Y[Gasto promedio];
-              Y -->S;
-              W -->|Regresar|S
-          S -->|Opción 3|Z{Capital};
-              Z -->|Opción 1|A1[Productos con bajo stock];
-              A1 -->S;
-              Z -->|Opción 2|B1[Valor total del inventario];
-              B1 -->S;
-              Z -->|Regresar|S
-          S -->|Regresar|B;
+    S -->|Opción 1|T{Ventas};
+        T -->|Opción 1|U[Producto más vendido];
+        U -->L[Se muestra Producto] --> S;
+        T -->|Opción 2|V[Ingresos Totales];
+        V -->M[Se muestran Ingresos Totales] --> S;
+        T -->|Regresar|S;
+    S -->|Opción 2|W{Clientes};
+        W -->|Opción 1|X{Cliente con más compras};
+            X -->|Opción 1|N1[Por número de facturas];
+            N1 -->R[Se muestra Cliente por número de facturas] --> S;
+            X -->|Opción 2|N2[Por dinero gastado];
+            N2 -->R2[Se muestra Cliente por dinero gastado] --> S;
+        W -->|Opción 2|Y{Gasto promedio};
+            Y -->|Opción 1|O1[Por cliente];
+            O1 -->P1[Se muestra Gasto promedio por cliente] --> S;
+            Y -->|Opción 2|O2[Por factura];
+            O2 -->P2[Se muestra Gasto promedio por factura] --> S;
+        W -->|Regresar|S;
+    S -->|Opción 3|Z{Capital};
+        Z -->|Opción 1|A1{Productos con bajo stock};
+            A1 -->|Opción 1|P[cantidad de stock maxima requerida];
+            P -->P3[Se muestra productos con stock menor a lo ingresado ] --> S;
+        Z -->|Opción 2|B1[Valor total del inventario];
+        B1 -->Q[Se muestra Valor total del inventario] --> S;
+        Z -->|Regresar|S;
 ```
 Al juntarse todos estos procesos se obtiene el siguiente resultado:
 ```mermaid
